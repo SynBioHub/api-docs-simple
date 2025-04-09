@@ -18,6 +18,7 @@
         <div class="sidebar">
             <nav>
                 <ul>
+                    <li><a href="#" data-api="about" class="home-link">Home</a></li>
                     <li><a href="#" data-api="user-endpoints">User API</a></li>
                     <li><a href="#" data-api="download-plugin">Download Plugin</a></li>
                     <li><a href="#" data-api="visualization-plugin">Visualization Plugin</a></li>
@@ -34,6 +35,7 @@
                 </div>
             </footer>
         </div>
+        <div class="sidebar-drag-handle" title="Drag to resize sidebar"></div>
 
         <div class="rightside">
             <header>
@@ -41,11 +43,13 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="container">
-                    <h1>SynBioHub API Documentation</h1>
+                    <a href="#" class="logo-link" data-api="about">
+                        <h1><img src="img/brand.svg" alt="SynBioHub" class="brand-logo"> API Documentation</h1>
+                    </a>
                 </div>
             </header>
             <div class="content-area">
-                <div class="api-intro">
+                <div id="about-section" class="api-intro">
                     <h2>About SynBioHub</h2>
                     <p>
                         SynBioHub is an open-source software project that provides a web interface for storing and

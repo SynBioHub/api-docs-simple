@@ -13,8 +13,18 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         // Build the sidebar dynamically
         const sidebarNav = document.querySelector('.sidebar nav ul');
-        sidebarNav.innerHTML = ''; // Clear any existing content
         
+        // Keep the Home link as the first item
+        const homeLink = sidebarNav.querySelector('.home-link');
+        if (homeLink) {
+          // If we have a home link in the HTML, preserve it
+          sidebarNav.innerHTML = homeLink.parentElement.outerHTML;
+        } else {
+          // Otherwise clear and create a new one
+          sidebarNav.innerHTML = '<li><a href="#" data-api="about" class="home-link">Home</a></li>';
+        }
+        
+        // Add the API links from the data
         data.forEach(item => {
           const li = document.createElement('li');
           const a = document.createElement('a');
@@ -35,9 +45,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function initializeApp(sidebarData) {
-    // Initialize with the first API spec or fallback to user-endpoints
-    const defaultApi = sidebarData.length > 0 ? sidebarData[0].id : 'user-endpoints';
-    loadApiSpec(defaultApi);
+    // Initialize with the about section as default
+    showAboutSection();
+    
+    // Initialize the resizable sidebar
+    initResizableSidebar();
   
     // Mobile menu toggle functionality
     const mobileMenuButton = document.querySelector('.mobile-menu-button');
@@ -56,12 +68,32 @@ document.addEventListener('DOMContentLoaded', function() {
       sidebarOverlay.classList.remove('active');
       document.body.classList.remove('sidebar-open');
     });
+
+    // Set up logo click event
+    const logoLink = document.querySelector('.logo-link');
+    if (logoLink) {
+      logoLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showAboutSection();
+        
+        // Update active class in sidebar
+        document.querySelectorAll('.sidebar nav a').forEach(link => {
+          link.classList.remove('active');
+        });
+        
+        // Find and activate the Home link
+        const homeLink = document.querySelector('.sidebar nav a[data-api="about"]');
+        if (homeLink) {
+          homeLink.classList.add('active');
+        }
+      });
+    }
   
     // Set up navigation
     const navLinks = document.querySelectorAll('.sidebar nav a');
     navLinks.forEach(link => {
-      // Mark the first link as active initially
-      if (link.getAttribute('data-api') === defaultApi) {
+      // Mark the about/home link as active initially
+      if (link.getAttribute('data-api') === 'about') {
         link.classList.add('active');
       }
       
@@ -74,9 +106,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add active class to clicked link
         this.classList.add('active');
         
-        // Load the selected API spec
+        // Load the selected API spec or show about section
         const apiName = this.getAttribute('data-api');
-        loadApiSpec(apiName);
+        if (apiName === 'about') {
+          showAboutSection();
+        } else {
+          hideAboutSection();
+          loadApiSpec(apiName);
+        }
         
         // Close sidebar on mobile after clicking a link
         if (window.innerWidth <= 768) {
@@ -87,6 +124,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     });
+  }
+
+  function showAboutSection() {
+    const aboutSection = document.getElementById('about-section');
+    const swaggerUI = document.getElementById('swagger-ui');
+    
+    if (aboutSection) {
+      aboutSection.style.display = 'block';
+    }
+    
+    if (swaggerUI) {
+      swaggerUI.style.display = 'none';
+    }
+    
+    // Update example commands for the about section
+    updateExampleCommands('about');
+  }
+  
+  function hideAboutSection() {
+    const aboutSection = document.getElementById('about-section');
+    const swaggerUI = document.getElementById('swagger-ui');
+    
+    if (aboutSection) {
+      aboutSection.style.display = 'none';
+    }
+    
+    if (swaggerUI) {
+      swaggerUI.style.display = 'block';
+    }
   }
 
   // Keep track of the Swagger UI instance
@@ -160,6 +226,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set different example commands based on the selected API
     switch (apiName) {
+      case 'about':
+        examples = `<h4>Getting Started Examples</h4>
+          <p>Basic API test:</p>
+          <pre><code>curl -X GET "https://synbiohub.org/public/igem/BBa_K1404008/1" -H "accept: application/json"</code></pre>
+          <p>Authenticate with the API:</p>
+          <pre><code>curl -X POST -H "Accept: text/plain" -d "email=user@example.com&password=yourpassword" https://synbiohub.org/login</code></pre>`;
+        break;
       case 'user-endpoints':
         examples = `<h4>User API Examples</h4>
           <p>Login:</p>
@@ -191,5 +264,116 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     exampleCommands.innerHTML = examples;
+  }
+
+  function initResizableSidebar() {
+    const dragHandle = document.querySelector('.sidebar-drag-handle');
+    const sidebar = document.querySelector('.sidebar');
+    const rightside = document.querySelector('.rightside');
+    const documentRoot = document.documentElement;
+    let isDragging = false;
+    let startX;
+    let startWidth;
+    
+    // Check if there's a saved width preference
+    const savedSidebarWidth = localStorage.getItem('sidebarWidth');
+    if (savedSidebarWidth) {
+      const width = parseInt(savedSidebarWidth);
+      // Set the CSS variable for sidebar width
+      documentRoot.style.setProperty('--sidebar-width', width + 'px');
+      // Update the drag handle position
+      dragHandle.style.left = width + 'px';
+    }
+
+    // Event listeners for mouse drag operations
+    dragHandle.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      startX = e.clientX;
+      startWidth = parseInt(window.getComputedStyle(sidebar).width);
+      
+      // Add dragging classes
+      dragHandle.classList.add('dragging');
+      sidebar.classList.add('dragging');
+      rightside.classList.add('dragging');
+      
+      // Prevent text selection during drag
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      
+      const width = startWidth + (e.clientX - startX);
+      
+      // Set minimum and maximum width constraints
+      if (width >= 200 && width <= 500) {
+        // Update CSS variable
+        documentRoot.style.setProperty('--sidebar-width', width + 'px');
+        
+        // Update the drag handle position
+        dragHandle.style.left = width + 'px';
+      }
+    });
+    
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      
+      // Remove dragging classes
+      dragHandle.classList.remove('dragging');
+      sidebar.classList.remove('dragging');
+      rightside.classList.remove('dragging');
+      
+      // Re-enable text selection
+      document.body.style.userSelect = '';
+      
+      // Save the new width preference
+      const newWidth = parseInt(window.getComputedStyle(sidebar).width);
+      localStorage.setItem('sidebarWidth', newWidth);
+    });
+    
+    // Touch support for mobile devices
+    dragHandle.addEventListener('touchstart', function(e) {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      startWidth = parseInt(window.getComputedStyle(sidebar).width);
+      
+      // Add dragging classes
+      dragHandle.classList.add('dragging');
+      sidebar.classList.add('dragging');
+      rightside.classList.add('dragging');
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      
+      const width = startWidth + (e.touches[0].clientX - startX);
+      
+      // Set minimum and maximum width constraints
+      if (width >= 200 && width <= 500) {
+        // Update CSS variable
+        documentRoot.style.setProperty('--sidebar-width', width + 'px');
+        
+        // Update the drag handle position
+        dragHandle.style.left = width + 'px';
+      }
+    });
+    
+    document.addEventListener('touchend', function() {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      
+      // Remove dragging classes
+      dragHandle.classList.remove('dragging');
+      sidebar.classList.remove('dragging');
+      rightside.classList.remove('dragging');
+      
+      // Save the new width preference
+      const newWidth = parseInt(window.getComputedStyle(sidebar).width);
+      localStorage.setItem('sidebarWidth', newWidth);
+    });
   }
 });
