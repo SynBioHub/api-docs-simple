@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynBioHub API Documentation</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Include Swagger UI CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.19.0/swagger-ui.css">
+    <!-- Add Font Awesome for menu icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="sidebar-overlay"></div>
+        <div class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="#" data-api="user-endpoints">User API</a></li>
+                    <li><a href="#" data-api="download-plugin">Download Plugin</a></li>
+                    <li><a href="#" data-api="visualization-plugin">Visualization Plugin</a></li>
+                    <li><a href="#" data-api="submission-plugin">Submission Plugin</a></li>
+                    <!-- Add more API sections as needed -->
+                </ul>
+            </nav>
+            <footer>
+                <div class="container">
+                    <p><a href="https://github.com/SynBioHub/synbiohub">SynBioHub GitHub</a>
+                        <a
+                            href="https://groups.google.com/forum/#!forum/synbiohub-users">Join the SynBioHub Users mailing
+                            list</a></p>
+                </div>
+            </footer>
+        </div>
+
+        <div class="rightside">
+            <header>
+                <button class="mobile-menu-button" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="container">
+                    <h1>SynBioHub API Documentation</h1>
+                </div>
+            </header>
+            <div class="content-area">
+                <div class="api-intro">
+                    <h2>About SynBioHub</h2>
+                    <p>
+                        SynBioHub is an open-source software project that provides a web interface for storing and
+                        publishing synthetic biology designs.
+                        It can be used to publish a library of synthetic parts and designs as a service, to share
+                        designs
+                        with collaborators,
+                        and to store designs of biological systems locally.
+                    </p>
+                    <p>
+                        This documentation provides details on the available API endpoints for interacting with
+                        SynBioHub
+                        programmatically.
+                    </p>
+                </div>
+
+                <div id="swagger-ui"></div>
+
+                <div class="example-commands">
+                    <h4>Example Commands</h4>
+                    <p>Test the API with curl:</p>
+                    <pre><code>curl -X GET "https://synbiohub.org/public/igem/BBa_K1404008/1" -H "accept: application/json"</code></pre>
+                    <p>Authenticate with the API:</p>
+                    <pre><code>curl -X POST -H "Accept: text/plain" -d "email=user@example.com&password=yourpassword" https://synbiohub.org/login</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Swagger UI Bundle -->
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"></script>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

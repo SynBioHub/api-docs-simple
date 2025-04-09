@@ -1,0 +1,318 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Submission API"
+  version: "1.0.0"
+  description: "API endpoints for managing submissions on SynBioHub"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token required for all submission endpoints
+
+paths:
+  /submit:
+    post:
+      summary: Submit SBOL Document
+      description: Create a new collection or add to an existing collection using the elements within a file
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: A user-defined string identifier for the submission (alphanumeric and underscores only)
+                  example: "BBa_R0010"
+                version:
+                  type: string
+                  description: The version string to associate with the submission
+                  example: "1"
+                name:
+                  type: string
+                  description: The name to assign to the submission
+                rootCollections:
+                  type: string
+                  description: The URI of the collection to submit into (when adding to existing collection)
+                description:
+                  type: string
+                  description: The description to assign to the submission
+                citations:
+                  type: string
+                  description: A list of comma separated PubMed IDs of citations
+                overwrite_merge:
+                  type: string
+                  enum: ["0", "1", "2", "3"]
+                  description: >
+                    How to handle existing submissions:
+                    0 = prevent if submission exists, 
+                    1 = overwrite if submission exists, 
+                    2 = merge and prevent if submission exists, 
+                    3 = merge and overwrite matching URIs
+                  default: "0"
+                file:
+                  type: string
+                  format: binary
+                  description: Contents of an SBOL2, SBOL1, GenBank, FASTA, GFF3, ZIP, or COMBINE Archive file
+              required:
+                - file
+      responses:
+        '200':
+          description: Submission successful
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '415':
+          description: Unsupported media type - file format not recognized
+        '500':
+          description: Server error processing submission
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/makePublic:
+    post:
+      summary: Make Collection Public
+      description: Makes the collection specified by the URI public
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The ID for the new collection
+                version:
+                  type: string
+                  description: The version for the new collection
+                name:
+                  type: string
+                  description: The name for the new collection (optional, default is existing name)
+                description:
+                  type: string
+                  description: The description for the new collection (optional, default is existing description)
+                citations:
+                  type: string
+                  description: The comma-separated list of PubMed IDs (optional, default is existing citations)
+                tabState:
+                  type: string
+                  enum: ["new", "existing"]
+                  description: Use "new" for moving to a new public collection, "existing" for moving into an existing one
+                collections:
+                  type: string
+                  description: If moving into an existing collection, this is the URI of the collection
+              required:
+                - id
+                - version
+                - tabState
+      responses:
+        '200':
+          description: Collection made public successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an owner of this collection
+        '404':
+          description: Collection not found
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/removeCollection:
+    get:
+      summary: Remove Collection
+      description: Removes the collection specified by the URI
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Collection removed successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an owner of this collection
+        '404':
+          description: Collection not found
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/remove:
+    get:
+      summary: Remove Object
+      description: Remove the object specified by the URI, and references to that object
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Object removed successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an owner of this object
+        '404':
+          description: Object not found
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/replace:
+    get:
+      summary: Replace Object
+      description: Remove the object specified by the URI, but leave references to the object
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Object replaced successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an owner of this object
+        '404':
+          description: Object not found
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/icon:
+    post:
+      summary: Update Collection Icon
+      description: Updates the collection's icon
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                collectionIcon:
+                  type: string
+                  format: binary
+                  description: The image file to use as the collection icon
+              required:
+                - collectionIcon
+      responses:
+        '200':
+          description: Collection icon updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an owner of this collection
+        '404':
+          description: Collection not found
+        '415':
+          description: Unsupported media type - file format not recognized
+      tags:
+        - Submission

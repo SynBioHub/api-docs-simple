@@ -1,0 +1,301 @@
+openapi: 3.0.0
+info:
+  title: SynBioHub User API
+  version: 1.0.0
+  description: API endpoints for user authentication and profile management in SynBioHub
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token received from login endpoint
+  schemas:
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        affiliation:
+          type: string
+        graphUri:
+          type: string
+          format: uri
+        isAdmin:
+          type: boolean
+        resetPasswordLink:
+          type: string
+        isCurator:
+          type: boolean
+        isMember:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        user_external_profiles:
+          type: array
+          items:
+            type: object
+      example:
+        id: 1
+        name: "Test User"
+        username: "testuser"
+        email: "test@user.synbiohub"
+        affiliation: "jimmy"
+        password: ""
+        graphUri: "http://localhost:7777/usertestuser"
+        isAdmin: true
+        resetPasswordLink: ""
+        isCurator: true
+        isMember: true
+        createdAt: "2020-05-19T14:44:44.204Z"
+        updatedAt: "2020-05-20T21:11:21.934Z"
+        user_external_profiles: []
+
+paths:
+  /login:
+    post:
+      summary: User login
+      description: This POST request requires email (or username)/password and returns a user token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The e-mail address or username of the user
+                password:
+                  type: string
+                  description: User's password
+                  format: password
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Authentication token
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Server error
+      tags:
+        - Authentication
+
+  /logout:
+    post:
+      summary: User logout
+      description: Logs out the user specified in the X-authorization header
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Logout successful
+        '401':
+          description: Unauthorized - invalid token
+        '500':
+          description: Server error
+      tags:
+        - Authentication
+
+  /register:
+    post:
+      summary: Register new user
+      description: Register a new user on SynBioHub
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username of the user
+                name:
+                  type: string
+                  description: Full name of the user
+                affiliation:
+                  type: string
+                  description: Affiliation of the user
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user
+                password1:
+                  type: string
+                  format: password
+                  description: User's password
+                password2:
+                  type: string
+                  format: password
+                  description: Password confirmation
+              required:
+                - username
+                - name
+                - email
+                - password1
+                - password2
+      responses:
+        '200':
+          description: Registration successful
+        '400':
+          description: Invalid registration data
+        '409':
+          description: Username or email already exists
+        '500':
+          description: Server error
+      tags:
+        - Authentication
+
+  /resetPassword:
+    post:
+      summary: Request password reset
+      description: Request a reset password token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user
+              required:
+                - email
+      responses:
+        '200':
+          description: Password reset request successful
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+      tags:
+        - Authentication
+
+  /setNewPassword:
+    post:
+      summary: Set new password
+      description: Resets the user's password with the provided token and new password
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Token received by email
+                password1:
+                  type: string
+                  format: password
+                  description: New password
+                password2:
+                  type: string
+                  format: password
+                  description: Password confirmation
+              required:
+                - token
+                - password1
+                - password2
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid token or passwords don't match
+        '500':
+          description: Server error
+      tags:
+        - Authentication
+
+  /profile:
+    get:
+      summary: View user profile
+      description: View the authenticated user's profile
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized - invalid token
+        '500':
+          description: Server error
+      tags:
+        - Profile
+        
+    post:
+      summary: Update user profile
+      description: Update the authenticated user's profile
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the user
+                affiliation:
+                  type: string
+                  description: Affiliation of the user
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user
+                password1:
+                  type: string
+                  format: password
+                  description: New password (optional)
+                password2:
+                  type: string
+                  format: password
+                  description: Password confirmation (if password1 is provided)
+              required:
+                - name
+                - email
+      responses:
+        '200':
+          description: Profile updated successfully
+        '400':
+          description: Invalid profile data
+        '401':
+          description: Unauthorized - invalid token
+        '500':
+          description: Server error
+      tags:
+        - Profile

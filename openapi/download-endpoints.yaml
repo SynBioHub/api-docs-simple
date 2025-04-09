@@ -1,0 +1,304 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Download API"
+  version: "1.0.0"
+  description: "API endpoints for downloading content from SynBioHub in various formats"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token for accessing private objects
+
+paths:
+  /{prefix}/{designid}/{version}/sbol:
+    get:
+      summary: Download SBOL
+      description: Returns the object in SBOL format
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+          example: public/igem
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+          example: BBa_K1404008
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+          example: 1
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: SBOL document
+          content:
+            application/rdf+xml:
+              schema:
+                type: string
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/sbolnr:
+    get:
+      summary: Download Non-Recursive SBOL
+      description: Returns the object in SBOL format non-recursively (without its children)
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: SBOL document (non-recursive)
+          content:
+            application/rdf+xml:
+              schema:
+                type: string
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/metadata:
+    get:
+      summary: Download Metadata
+      description: Returns the metadata for the object
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Metadata in JSON format
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/gb:
+    get:
+      summary: Download GenBank
+      description: Returns the object in GenBank format
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: GenBank file
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/fasta:
+    get:
+      summary: Download FASTA
+      description: Returns the object in FASTA format
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: FASTA file
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/gff:
+    get:
+      summary: Download GFF3
+      description: Returns the object in GFF3 format
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: GFF3 file
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download
+
+  /{prefix}/{designid}/{version}/download:
+    get:
+      summary: Download Attachment
+      description: Returns the source for an attachment to the specified URI
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Attachment file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '403':
+          description: Not authorized to access this object
+        '404':
+          description: Object not found
+      tags:
+        - Download

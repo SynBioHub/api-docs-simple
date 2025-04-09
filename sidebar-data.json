@@ -1,0 +1,79 @@
+[
+  {
+    "id": "admin-endpoints",
+    "title": "SynBioHub Admin API",
+    "description": "API endpoints for SynBioHub administration (requires admin privileges)",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "attachment-endpoints",
+    "title": "SynBioHub Attachment API",
+    "description": "API endpoints for managing attachments on SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "download-endpoints",
+    "title": "SynBioHub Download API",
+    "description": "API endpoints for downloading content from SynBioHub in various formats",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "download-plugin",
+    "title": "SynBioHub Download Plugin API",
+    "description": "API specification for SynBioHub download plugin endpoints",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "edit-endpoints",
+    "title": "SynBioHub Edit API",
+    "description": "API endpoints for editing objects in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "permission-endpoints",
+    "title": "SynBioHub Permission API",
+    "description": "API endpoints for managing permissions on SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "search-endpoints",
+    "title": "SynBioHub Search API",
+    "description": "API specification for searching content in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "submission-endpoints",
+    "title": "SynBioHub Submission API",
+    "description": "API endpoints for managing submissions on SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "submission-plugin",
+    "title": "SynBioHub Submission Plugin API",
+    "description": "API specification for SynBioHub submission plugin endpoints",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "user-endpoints",
+    "title": "SynBioHub User API",
+    "description": "API endpoints for user authentication and profile management in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "visualization-plugin",
+    "title": "SynBioHub Visualization Plugin API",
+    "description": "API specification for SynBioHub visualization plugin endpoints",
+    "version": "1.0.0",
+    "order": 999
+  }
+]

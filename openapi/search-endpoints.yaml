@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Search API"
+  version: "1.0.0"
+  description: API specification for searching content in SynBioHub
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Optional authentication token for accessing both public and private data
+
+paths:
+  /search/{query}:
+    get:
+      summary: Search metadata
+      description: Returns metadata for objects matching the search query
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Search query composed of key=value pairs and optional search string
+          example: objectType=ComponentDefinition&role=http://identifiers.org/so/SO:0000316&searchterm
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+          description: Pagination offset
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: Maximum number of results to return
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+  
+  /searchCount/{query}:
+    get:
+      summary: Count search results
+      description: Returns the number of items matching the search query
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Search query composed of key=value pairs and optional search string
+          example: objectType=ComponentDefinition&role=http://identifiers.org/so/SO:0000316&searchterm
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Count of matching items
+          content:
+            text/plain:
+              schema:
+                type: integer
+      tags:
+        - Search
+  
+  /rootCollections:
+    get:
+      summary: Get root collections
+      description: Returns a list of all root collections
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: List of root collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+        
+  /manage:
+    get:
+      summary: View user submissions
+      description: Returns metadata on all submissions for the authenticated user
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: User submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                      format: uri
+        '401':
+          description: Unauthorized - invalid or missing token
+      tags:
+        - Search

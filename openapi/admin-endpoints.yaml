@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Admin API"
+  version: "1.0.0"
+  description: API endpoints for SynBioHub administration (requires admin privileges)
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token with admin privileges
+  
+  schemas:
+    Status:
+      type: object
+      properties:
+        instanceName:
+          type: string
+        version:
+          type: string
+        webOfRegistriesUrl:
+          type: string
+        administrators:
+          type: array
+          items:
+            type: string
+            format: email
+
+paths:
+  /admin:
+    get:
+      summary: Get server status
+      description: Returns configuration options and status information for SynBioHub
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Server status information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '401':
+          description: Unauthorized - missing or invalid token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Administration
+
+  /admin/sparql:
+    get:
+      summary: Execute SPARQL admin query
+      description: Executes an administrative SPARQL query and returns the results
+      security:
+        - userToken: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: SPARQL query to execute
+      responses:
+        '200':
+          description: SPARQL query results
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid SPARQL query
+        '401':
+          description: Unauthorized - missing or invalid token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Administration
+
+  /admin/graphs:
+    get:
+      summary: View graphs
+      description: Returns existing graphs and their number of triples
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of graphs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    graph:
+                      type: string
+                    triples:
+                      type: integer
+        '401':
+          description: Unauthorized - missing or invalid token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Administration
+
+  /admin/newUser:
+    post:
+      summary: Create new user
+      description: Creates a new user account
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username for the new user
+                name:
+                  type: string
+                  description: Full name of the new user
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the new user
+                affiliation:
+                  type: string
+                  description: Affiliation of the new user
+                isMember:
+                  type: string
+                  enum: ["0", "1"]
+                  description: Whether the user is a member (1) or not (0)
+                isCurator:
+                  type: string
+                  enum: ["0", "1"] 
+                  description: Whether the user is a curator (1) or not (0)
+                isAdmin:
+                  type: string
+                  enum: ["0", "1"]
+                  description: Whether the user is an admin (1) or not (0)
+              required:
+                - username
+                - name
+                - email
+      responses:
+        '200':
+          description: User created successfully
+        '400':
+          description: Invalid user data
+        '401':
+          description: Unauthorized - missing or invalid token
+        '403':
+          description: Forbidden - user is not an administrator
+        '409':
+          description: Username or email already exists
+      tags:
+        - Administration

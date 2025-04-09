@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Visualization Plugin API"
+  version: "1.0.0"
+  description: API specification for SynBioHub visualization plugin endpoints
+  
+paths:
+  /status:
+    get:
+      summary: Get plugin status
+      description: Returns the status of the visualization plugin
+      responses:
+        '200':
+          description: Plugin is ready to handle requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Ready"
+        '5XX':
+          description: Plugin is not ready
+
+  /evaluate:
+    post:
+      summary: Evaluate if plugin can handle the visualization request
+      description: The evaluate endpoint checks if the plugin can handle the requested visualization operation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The RDF type of the top-level object
+              required:
+                - type
+      responses:
+        '200':
+          description: Plugin can handle the visualization request
+        '4XX':
+          description: Plugin cannot handle the visualization request or request is invalid
+  
+  /run:
+    post:
+      summary: Run the visualization operation
+      description: The run endpoint processes the visualization request and returns HTML to be displayed on the SynBioHub page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                complete_sbol:
+                  type: string
+                  format: uri
+                  description: The single-use URL for the complete object to operate on
+                shallow_sbol:
+                  type: string
+                  format: uri
+                  description: The single-use URL for a summarized or truncated view of the object
+                top_level:
+                  type: string
+                  format: uri
+                  description: The top-level URL of the SBOL object
+                instanceUrl:
+                  type: string
+                  format: uri
+                  description: The top-level URL of the SBOL object
+                size:
+                  type: integer
+                  description: A number representing an estimate of the size of the object, probably triple count
+              required:
+                - complete_sbol
+                - top_level
+      responses:
+        '200':
+          description: Visualization operation successful
+          content:
+            text/html:
+              schema:
+                type: string
+                description: HTML content to be rendered on the SynBioHub page
+        '4XX':
+          description: Error processing visualization request

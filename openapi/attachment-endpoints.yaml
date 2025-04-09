@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Attachment API"
+  version: "1.0.0"
+  description: "API endpoints for managing attachments on SynBioHub"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token required for all attachment endpoints
+
+paths:
+  /{uri}/attach:
+    post:
+      summary: Attach File
+      description: Attach a file to an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to attach
+              required:
+                - file
+      responses:
+        '200':
+          description: File attached successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user does not have permission
+      tags:
+        - Attachment
+
+  /{uri}/attachURL:
+    post:
+      summary: Attach URL
+      description: Attach a URL to an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The URL to attach
+                name:
+                  type: string
+                  description: The name of the attachment
+                type:
+                  type: string
+                  description: The format type of the object at the URL
+              required:
+                - url
+                - name
+                - type
+      responses:
+        '200':
+          description: URL attached successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user does not have permission
+      tags:
+        - Attachment
+
+  /{uri}/download:
+    get:
+      summary: Download Attachment
+      description: Download an attachment from an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Attachment file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - invalid or missing token
+        '404':
+          description: Attachment not found
+      tags:
+        - Attachment
