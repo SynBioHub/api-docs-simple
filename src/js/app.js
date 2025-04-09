@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
           sidebarNav.innerHTML = homeLink.parentElement.outerHTML;
         } else {
           // Otherwise clear and create a new one
-          sidebarNav.innerHTML = '<li><a href="#" data-api="about" class="home-link">Home</a></li>';
+          sidebarNav.innerHTML = '<li><a href="#" data-api="about" class="home-link" title="Home page and API overview">Home</a></li>';
         }
         
         // Add the API links from the data
@@ -30,8 +30,21 @@ document.addEventListener('DOMContentLoaded', function() {
           const a = document.createElement('a');
           a.setAttribute('href', '#');
           a.setAttribute('data-api', item.id);
-          a.setAttribute('title', item.description);
+          
+          // Ensure description is used for title attribute (hover text)
+          if (item.description && item.description.trim() !== '') {
+            a.setAttribute('title', item.description);
+          } else {
+            a.setAttribute('title', `${item.title} API documentation`);
+          }
+          
           a.textContent = item.title;
+          
+          // Add a span for tooltip if needed (optional enhancement)
+          if (item.description && item.description.trim() !== '') {
+            a.classList.add('has-tooltip');
+          }
+          
           li.appendChild(a);
           sidebarNav.appendChild(li);
         });

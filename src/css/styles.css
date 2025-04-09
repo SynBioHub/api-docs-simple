@@ -523,14 +523,19 @@ code {
         display: none; /* Hide drag handle on mobile */
     }
     
-    /* Make HTTP method tags skinny with just one letter on mobile */
+    /* Make HTTP method tags square with just one letter on mobile */
     .swagger-ui .opblock .opblock-summary-method {
         min-width: 30px !important;
         width: 30px !important;
-        padding: 6px 0 !important;
+        height: 30px !important; /* Make height match width for square appearance */
+        padding: 0 !important; /* Remove padding */
         text-align: center;
-        font-size: 9px !important; /* Just shrink the font size */
+        font-size: 9px !important;
         font-weight: bold;
+        line-height: 30px !important; /* Center text vertically */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
     /* Adjust the path and description spacing */
