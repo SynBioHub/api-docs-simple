@@ -227,20 +227,24 @@ footer {
     padding: 10px 0 !important; /* Add padding to footer */
     margin: 0 !important;
     flex-shrink: 0; /* Prevent the footer from shrinking */
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Add horizontal line at the top of footer */
+    position: relative; /* For absolute positioning of pseudo-element */
+    border-top: none; /* Remove existing border */
 }
 
-footer a {
-    color: white;
-    text-decoration: none;
-    background-color: var(--primary-color) !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    margin-bottom: 10px !important;
-}
-
-footer a:hover {
-    text-decoration: underline;
+footer::before {
+    content: '';
+    position: absolute;
+    top: 5px; /* Position it 5px from the top instead of directly at the top */
+    left: 10%;
+    right: 10%;
+    height: 1px; /* Thinner line */
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.2) 80%,
+        rgba(255, 255, 255, 0)
+    );
 }
 
 /* Swagger UI customization */
@@ -510,7 +514,86 @@ code {
         line-height: 1.4;
     }
     
+    footer::before {
+        left: 5%;
+        right: 5%;
+    }
+    
     .sidebar-drag-handle {
         display: none; /* Hide drag handle on mobile */
+    }
+    
+    /* Make HTTP method tags skinny with just one letter on mobile */
+    .swagger-ui .opblock .opblock-summary-method {
+        min-width: 30px !important;
+        width: 30px !important;
+        padding: 6px 0 !important;
+        text-align: center;
+        font-size: 9px !important; /* Just shrink the font size */
+        font-weight: bold;
+    }
+    
+    /* Adjust the path and description spacing */
+    .swagger-ui .opblock-summary-path {
+        margin-left: 0.5em;
+        font-size: 12px;
+    }
+    
+    .swagger-ui .opblock-summary-description {
+        margin-left: 0.5em;
+        font-size: 11px;
+    }
+    
+    /* Adjust the path and description spacing */
+    .swagger-ui .opblock-summary-path {
+        margin-left: 0.5em;
+        font-size: 12px;
+        word-break: break-all; /* Break long words */
+        max-width: 50%; /* Limit width */
+        white-space: normal; /* Allow text to wrap */
+        line-height: 1.3;
+    }
+    
+    .swagger-ui .opblock-summary-description {
+        margin-left: 0.5em;
+        font-size: 11px;
+        opacity: 0.8; /* Make description slightly faded */
+        max-width: 40%; /* Limit width */
+        line-height: 1.2;
+        white-space: normal; /* Allow text to wrap */
+    }
+    
+    /* Make operation block more compact */
+    .swagger-ui .opblock {
+        margin-bottom: 10px;
+    }
+    
+    .swagger-ui .opblock-summary {
+        padding: 8px 5px !important;
+    }
+    
+    /* Reduce font size of parameter names and descriptions */
+    .swagger-ui .parameters-col_name {
+        font-size: 12px;
+        word-break: break-all;
+    }
+    
+    .swagger-ui .parameters-col_description {
+        font-size: 11px;
+    }
+    
+    .swagger-ui .parameter__name, 
+    .swagger-ui .parameter__type {
+        font-size: 11px;
+    }
+    
+    .swagger-ui .response-col_status,
+    .swagger-ui .response-col_description {
+        font-size: 11px;
+    }
+    
+    /* Compact tables */
+    .swagger-ui table {
+        font-size: 11px;
     }
 }
