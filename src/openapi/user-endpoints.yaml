@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: SynBioHub User API
-  version: 1.0.0
-  description: API endpoints for user authentication and profile management in SynBioHub
+  title: "SynBioHub User API"
+  version: "1.0.0"
+  description: "API endpoints for user management in SynBioHub"
   
 servers:
   - url: 'https://synbiohub.org'
@@ -16,63 +16,13 @@ components:
       type: apiKey
       in: header
       name: X-authorization
-      description: Authentication token received from login endpoint
-  schemas:
-    UserProfile:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        username:
-          type: string
-        email:
-          type: string
-        affiliation:
-          type: string
-        graphUri:
-          type: string
-          format: uri
-        isAdmin:
-          type: boolean
-        resetPasswordLink:
-          type: string
-        isCurator:
-          type: boolean
-        isMember:
-          type: boolean
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        user_external_profiles:
-          type: array
-          items:
-            type: object
-      example:
-        id: 1
-        name: "Test User"
-        username: "testuser"
-        email: "test@user.synbiohub"
-        affiliation: "jimmy"
-        password: ""
-        graphUri: "http://localhost:7777/usertestuser"
-        isAdmin: true
-        resetPasswordLink: ""
-        isCurator: true
-        isMember: true
-        createdAt: "2020-05-19T14:44:44.204Z"
-        updatedAt: "2020-05-20T21:11:21.934Z"
-        user_external_profiles: []
+      description: Authentication token required for user management endpoints
 
 paths:
   /login:
     post:
-      summary: User login
-      description: This POST request requires email (or username)/password and returns a user token
+      summary: Login
+      description: Login to SynBioHub and receive an authentication token
       requestBody:
         required: true
         content:
@@ -82,11 +32,12 @@ paths:
               properties:
                 email:
                   type: string
-                  description: The e-mail address or username of the user
+                  format: email
+                  description: User's email address
                 password:
                   type: string
-                  description: User's password
                   format: password
+                  description: User's password
               required:
                 - email
                 - password
@@ -94,38 +45,36 @@ paths:
         '200':
           description: Login successful
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                description: Authentication token
-              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Authentication token to use for subsequent requests
         '401':
-          description: Invalid credentials
-        '500':
-          description: Server error
+          description: Unauthorized - invalid credentials
       tags:
-        - Authentication
+        - User
 
   /logout:
     post:
-      summary: User logout
-      description: Logs out the user specified in the X-authorization header
+      summary: Logout
+      description: Invalidate the current authentication token
       security:
         - userToken: []
       responses:
         '200':
           description: Logout successful
         '401':
-          description: Unauthorized - invalid token
-        '500':
-          description: Server error
+          description: Unauthorized - invalid or missing token
       tags:
-        - Authentication
+        - User
 
   /register:
     post:
-      summary: Register new user
-      description: Register a new user on SynBioHub
+      summary: Register User
+      description: Register a new user account
       requestBody:
         required: true
         content:
@@ -135,22 +84,22 @@ paths:
               properties:
                 username:
                   type: string
-                  description: Username of the user
+                  description: Desired username
                 name:
                   type: string
                   description: Full name of the user
-                affiliation:
-                  type: string
-                  description: Affiliation of the user
                 email:
                   type: string
                   format: email
-                  description: Email address of the user
-                password1:
+                  description: User's email address
+                affiliation:
+                  type: string
+                  description: User's affiliation (e.g., university, company)
+                password:
                   type: string
                   format: password
-                  description: User's password
-                password2:
+                  description: Desired password
+                passwordConfirm:
                   type: string
                   format: password
                   description: Password confirmation
@@ -158,24 +107,20 @@ paths:
                 - username
                 - name
                 - email
-                - password1
-                - password2
+                - password
+                - passwordConfirm
       responses:
         '200':
           description: Registration successful
         '400':
-          description: Invalid registration data
-        '409':
-          description: Username or email already exists
-        '500':
-          description: Server error
+          description: Bad request - validation errors
       tags:
-        - Authentication
+        - User
 
   /resetPassword:
     post:
-      summary: Request password reset
-      description: Request a reset password token
+      summary: Reset Password
+      description: Request a password reset
       requestBody:
         required: true
         content:
@@ -186,78 +131,50 @@ paths:
                 email:
                   type: string
                   format: email
-                  description: Email address of the user
+                  description: Email address of the account
               required:
                 - email
       responses:
         '200':
-          description: Password reset request successful
+          description: Password reset email sent
         '404':
-          description: User not found
-        '500':
-          description: Server error
+          description: Account not found
       tags:
-        - Authentication
-
-  /setNewPassword:
-    post:
-      summary: Set new password
-      description: Resets the user's password with the provided token and new password
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: Token received by email
-                password1:
-                  type: string
-                  format: password
-                  description: New password
-                password2:
-                  type: string
-                  format: password
-                  description: Password confirmation
-              required:
-                - token
-                - password1
-                - password2
-      responses:
-        '200':
-          description: Password reset successful
-        '400':
-          description: Invalid token or passwords don't match
-        '500':
-          description: Server error
-      tags:
-        - Authentication
+        - User
 
   /profile:
     get:
-      summary: View user profile
-      description: View the authenticated user's profile
+      summary: Get User Profile
+      description: Get the current user's profile information
       security:
         - userToken: []
       responses:
         '200':
-          description: User profile data
+          description: User profile
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
+                type: object
+                properties:
+                  username:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  affiliation:
+                    type: string
+                  isAdmin:
+                    type: boolean
         '401':
-          description: Unauthorized - invalid token
-        '500':
-          description: Server error
+          description: Unauthorized - invalid or missing token
       tags:
-        - Profile
-        
+        - User
+
+  /updateProfile:
     post:
-      summary: Update user profile
-      description: Update the authenticated user's profile
+      summary: Update Profile
+      description: Update the current user's profile information
       security:
         - userToken: []
       requestBody:
@@ -269,33 +186,132 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Name of the user
+                  description: New full name
                 affiliation:
                   type: string
-                  description: Affiliation of the user
+                  description: New affiliation
                 email:
                   type: string
                   format: email
-                  description: Email address of the user
-                password1:
-                  type: string
-                  format: password
-                  description: New password (optional)
-                password2:
-                  type: string
-                  format: password
-                  description: Password confirmation (if password1 is provided)
+                  description: New email address
               required:
                 - name
                 - email
       responses:
         '200':
           description: Profile updated successfully
-        '400':
-          description: Invalid profile data
         '401':
-          description: Unauthorized - invalid token
-        '500':
-          description: Server error
+          description: Unauthorized - invalid or missing token
+        '400':
+          description: Bad request - validation errors
       tags:
-        - Profile
+        - User
+
+  /updatePassword:
+    post:
+      summary: Update Password
+      description: Update the current user's password
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  format: password
+                  description: Current password
+                newPassword:
+                  type: string
+                  format: password
+                  description: New password
+                newPasswordConfirm:
+                  type: string
+                  format: password
+                  description: New password confirmation
+              required:
+                - currentPassword
+                - newPassword
+                - newPasswordConfirm
+      responses:
+        '200':
+          description: Password updated successfully
+        '401':
+          description: Unauthorized - invalid current password
+        '400':
+          description: Bad request - validation errors
+      tags:
+        - User
+
+  /users:
+    get:
+      summary: List Users
+      description: List all users (admin only)
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    affiliation:
+                      type: string
+                    isAdmin:
+                      type: boolean
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - User
+
+  /admin/setUserRole:
+    post:
+      summary: Set User Role
+      description: Change a user's role (admin only)
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username of the target user
+                role:
+                  type: string
+                  enum: [user, admin]
+                  description: New role for the user
+              required:
+                - username
+                - role
+      responses:
+        '200':
+          description: User role updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+        '404':
+          description: User not found
+      tags:
+        - User

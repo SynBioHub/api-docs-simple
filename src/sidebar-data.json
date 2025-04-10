@@ -1,8 +1,8 @@
 [
   {
     "id": "admin-endpoints",
-    "title": "SynBioHub Admin API",
-    "description": "API endpoints for SynBioHub administration (requires admin privileges)",
+    "title": "SynBioHub Administration API",
+    "description": "API endpoints for SynBioHub administration",
     "version": "1.0.0",
     "order": 999
   },
@@ -35,9 +35,37 @@
     "order": 999
   },
   {
+    "id": "mail-plugin-endpoints",
+    "title": "SynBioHub Mail and Plugin Configuration API",
+    "description": "API endpoints for managing mail settings and plugins in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
     "id": "permission-endpoints",
     "title": "SynBioHub Permission API",
     "description": "API endpoints for managing permissions on SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "registry-endpoints",
+    "title": "SynBioHub Registry Management API",
+    "description": "API endpoints for managing registries in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "remotes-endpoints",
+    "title": "SynBioHub Remotes Management API",
+    "description": "API endpoints for managing remote repositories in SynBioHub",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
+    "id": "explorer-endpoints",
+    "title": "SynBioHub SBOLExplorer API",
+    "description": "API endpoints for managing SBOLExplorer configuration in SynBioHub",
     "version": "1.0.0",
     "order": 999
   },
@@ -63,9 +91,16 @@
     "order": 999
   },
   {
+    "id": "theme-endpoints",
+    "title": "SynBioHub Theme API",
+    "description": "API endpoints for managing SynBioHub theme configuration",
+    "version": "1.0.0",
+    "order": 999
+  },
+  {
     "id": "user-endpoints",
     "title": "SynBioHub User API",
-    "description": "API endpoints for user authentication and profile management in SynBioHub",
+    "description": "API endpoints for user management in SynBioHub",
     "version": "1.0.0",
     "order": 999
   },

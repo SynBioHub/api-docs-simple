@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: "SynBioHub Admin API"
+  title: "SynBioHub Administration API"
   version: "1.0.0"
-  description: API endpoints for SynBioHub administration (requires admin privileges)
+  description: "API endpoints for SynBioHub administration"
   
 servers:
   - url: 'https://synbiohub.org'
@@ -16,105 +16,806 @@ components:
       type: apiKey
       in: header
       name: X-authorization
-      description: Authentication token with admin privileges
-  
-  schemas:
-    Status:
-      type: object
-      properties:
-        instanceName:
-          type: string
-        version:
-          type: string
-        webOfRegistriesUrl:
-          type: string
-        administrators:
-          type: array
-          items:
-            type: string
-            format: email
+      description: Authentication token required for all administration endpoints
 
 paths:
+  # General Admin Endpoints
   /admin:
     get:
-      summary: Get server status
-      description: Returns configuration options and status information for SynBioHub
+      summary: Get Status
+      description: Returns configuration options for SynBioHub
       security:
         - userToken: []
       responses:
         '200':
-          description: Server status information
+          description: Configuration options
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/Status'
+                type: string
         '401':
-          description: Unauthorized - missing or invalid token
+          description: Unauthorized - invalid or missing token
         '403':
-          description: Forbidden - user is not an administrator
+          description: Forbidden - user is not an admin
       tags:
         - Administration
 
   /admin/sparql:
     get:
-      summary: Execute SPARQL admin query
-      description: Executes an administrative SPARQL query and returns the results
-      security:
-        - userToken: []
+      summary: SPARQL Admin Query
+      description: Execute a SPARQL admin query
       parameters:
         - name: query
           in: query
           required: true
           schema:
             type: string
-          description: SPARQL query to execute
+          description: The SPARQL query to execute
+      security:
+        - userToken: []
       responses:
         '200':
-          description: SPARQL query results
+          description: Query results in JSON format
           content:
             application/json:
               schema:
                 type: object
-        '400':
-          description: Invalid SPARQL query
         '401':
-          description: Unauthorized - missing or invalid token
+          description: Unauthorized - invalid or missing token
         '403':
-          description: Forbidden - user is not an administrator
+          description: Forbidden - user is not an admin
+      tags:
+        - Administration
+
+  /admin/virtuoso:
+    get:
+      summary: Get Virtuoso Status
+      description: Returns 200 when Virtuoso is alive and 500 when it is not
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Virtuoso is alive
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+        '500':
+          description: Virtuoso is not alive
       tags:
         - Administration
 
   /admin/graphs:
     get:
-      summary: View graphs
+      summary: View Graphs
       description: Returns existing graphs and their number of triples
       security:
         - userToken: []
       responses:
         '200':
-          description: List of graphs
+          description: List of graphs and their sizes
           content:
-            application/json:
+            text/plain:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    graph:
-                      type: string
-                    triples:
-                      type: integer
+                type: string
         '401':
-          description: Unauthorized - missing or invalid token
+          description: Unauthorized - invalid or missing token
         '403':
-          description: Forbidden - user is not an administrator
+          description: Forbidden - user is not an admin
       tags:
         - Administration
 
+  /admin/log:
+    get:
+      summary: View Log
+      description: Returns the SynBioHub log file
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Log file contents
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Administration
+
+  # Mail Settings Endpoints
+  /admin/mail:
+    get:
+      summary: View Current Mail Settings
+      description: Returns the current mail configuration
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Current mail configuration
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Mail Administration
+    post:
+      summary: Update Mail Settings
+      description: Update the mail configuration
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: SendGrid API Key
+                fromEmail:
+                  type: string
+                  format: email
+                  description: SendGrid from Email
+              required:
+                - key
+                - fromEmail
+      responses:
+        '200':
+          description: Mail configuration updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Mail Administration
+
+  # Plugin Management Endpoints
+  /admin/plugins:
+    get:
+      summary: View Plugins
+      description: View current plugins
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of current plugins
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Plugin Administration
+
+  /admin/savePlugin:
+    post:
+      summary: Save Plugin
+      description: Save a new plugin
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Id of plugin, if adding a plugin, id should be New
+                category:
+                  type: string
+                  description: Type of plugin (rendering, submit, download)
+                name:
+                  type: string
+                  description: Name of the plugin
+                url:
+                  type: string
+                  format: uri
+                  description: URL for the plugin
+              required:
+                - id
+                - category
+                - name
+                - url
+      responses:
+        '200':
+          description: Plugin saved successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Plugin Administration
+
+  /admin/deletePlugin:
+    post:
+      summary: Delete Plugin
+      description: Delete a plugin
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The id of the plugin
+                category:
+                  type: string
+                  description: The type of plugin (rendering, submit, download)
+              required:
+                - id
+                - category
+      responses:
+        '200':
+          description: Plugin deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Plugin Administration
+
+  # Registry Management Endpoints
+  /admin/registries:
+    get:
+      summary: View Registries
+      description: View current registries
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of current registries
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  /admin/saveRegistry:
+    post:
+      summary: Save Registry
+      description: Save a new registry
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  description: URI prefix for the registry
+                url:
+                  type: string
+                  format: uri
+                  description: URL for the registry
+              required:
+                - uri
+                - url
+      responses:
+        '200':
+          description: Registry saved successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  /admin/deleteRegistry:
+    post:
+      summary: Delete Registry
+      description: Delete a registry
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  description: URI prefix of the registry to delete
+              required:
+                - uri
+      responses:
+        '200':
+          description: Registry deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  /admin/setAdministratorEmail:
+    post:
+      summary: Set Administrator Email
+      description: Update Web Of Registries administrator email
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                administratorEmail:
+                  type: string
+                  format: email
+                  description: Administrator email address
+              required:
+                - administratorEmail
+      responses:
+        '200':
+          description: Administrator email updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  /admin/retrieveFromWebOfRegistries:
+    post:
+      summary: Retrieve From Web Of Registries
+      description: Update registries from Web-of-Registries
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Registries updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  /admin/federate:
+    post:
+      summary: Federate
+      description: Send request to join Web-of-Registries for a SynBioHub
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                administratorEmail:
+                  type: string
+                  format: email
+                  description: Administrator email address
+                webOfRegistries:
+                  type: string
+                  format: uri
+                  description: URL for the Web-of-Registries
+              required:
+                - administratorEmail
+                - webOfRegistries
+      responses:
+        '200':
+          description: Federation request sent successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Registry Administration
+
+  # Remotes Management Endpoints
+  /admin/remotes:
+    get:
+      summary: View Remotes
+      description: View current remotes
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of current remotes
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Remotes Administration
+
+  /admin/saveRemote:
+    post:
+      summary: Save Remote
+      description: Save a new remote (Benchling or ICE)
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [benchling, ice]
+                  description: Type of remote (benchling or ice)
+                id:
+                  type: string
+                  description: Id of the remote
+                url:
+                  type: string
+                  format: uri
+                  description: URL for the remote (required for ICE)
+                benchlingApiToken:
+                  type: string
+                  description: API token for Benchling remote
+                iceApiTokenClient:
+                  type: string
+                  description: ICE API token client
+                iceApiToken:
+                  type: string
+                  description: ICE API token
+                iceApiTokenOwner:
+                  type: string
+                  description: ICE API token owner
+                iceCollection:
+                  type: string
+                  description: ICE collection
+                rejectUnauthorized:
+                  type: boolean
+                  description: Check SSL certificate?
+                folderPrefix:
+                  type: string
+                  description: Prefix to use for folders
+                sequenceSuffix:
+                  type: string
+                  description: Suffix to use for sequences
+                defaultFolderId:
+                  type: string
+                  description: Default folder ID
+                groupId:
+                  type: string
+                  description: Group ID (ICE only)
+                pi:
+                  type: string
+                  description: Principal Investigator name (ICE only)
+                piEmail:
+                  type: string
+                  format: email
+                  description: Principal Investigator email (ICE only)
+                isPublic:
+                  type: boolean
+                  description: Should the remote be visible publicly?
+                partNumberPrefix:
+                  type: string
+                  description: Prefix to use for parts (ICE only)
+                rootCollectionDisplayId:
+                  type: string
+                  description: Display ID for the root collection
+                rootCollectionName:
+                  type: string
+                  description: Name for the root collection
+                rootCollectionDescription:
+                  type: string
+                  description: Description for the root collection
+              required:
+                - type
+                - id
+      responses:
+        '200':
+          description: Remote saved successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Remotes Administration
+
+  /admin/deleteRemote:
+    post:
+      summary: Delete Remote
+      description: Delete a remote
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID of the remote configuration to remove
+              required:
+                - id
+      responses:
+        '200':
+          description: Remote deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Remotes Administration
+
+  # SBOLExplorer Endpoints
+  /admin/explorer:
+    get:
+      summary: View SBOLExplorer Config
+      description: View the current SBOLExplorer configuration
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Current SBOLExplorer configuration
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - SBOLExplorer
+    post:
+      summary: Update SBOLExplorer Config
+      description: Update the SBOLExplorer configuration
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                useSBOLExplorer:
+                  type: boolean
+                  description: Boolean indicating whether SBOLExplorer is to be used or not
+                SBOLExplorerEndpoint:
+                  type: string
+                  format: uri
+                  description: The endpoint where SBOLExplorer can be found
+                useDistributedSearch:
+                  type: boolean
+                  description: Boolean indicating whether distributed search should be used
+                pagerankTolerance:
+                  type: string
+                  description: The Pagerank tolerance factor
+                uclustIdentity:
+                  type: string
+                  description: The UClust clustering identity
+                elasticsearchEndpoint:
+                  type: string
+                  format: uri
+                  description: The endpoint where Elasticsearch can be found
+                elasticsearchIndexName:
+                  type: string
+                  description: The Elasticsearch index name
+                sparqlEndpoint:
+                  type: string
+                  format: uri
+                  description: The Virtuoso SPARQL endpoint
+                useCron:
+                  type: boolean
+                  description: Update the index automatically
+                cronDay:
+                  type: string
+                  description: How often the index is automatically updated
+                whichSearch:
+                  type: string
+                  enum: [usearch, vsearch]
+                  description: Which algorithms to use, 'usearch' or 'vsearch'
+      responses:
+        '200':
+          description: SBOLExplorer configuration updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - SBOLExplorer
+
+  /admin/explorerlog:
+    get:
+      summary: View SBOLExplorer Log
+      description: View the SBOLExplorer log
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer log contents
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - SBOLExplorer
+
+  /admin/explorerIndexingLog:
+    get:
+      summary: View SBOLExplorer Indexing Log
+      description: View the SBOLExplorer index log
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer indexing log contents
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - SBOLExplorer
+
+  /admin/explorerUpdateIndex:
+    post:
+      summary: Update SBOLExplorer Index
+      description: Updates SBOLExplorer index
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer index updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - SBOLExplorer
+
+  # Theme Management Endpoints
+  /admin/theme:
+    get:
+      summary: View Theme
+      description: View the current theme
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Current theme configuration
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Theme Administration
+    post:
+      summary: Update Theme
+      description: Update the theme
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                instanceName:
+                  type: string
+                  description: Name of the SynBioHub instance
+                frontPageText:
+                  type: string
+                  description: Text to show on the front page
+                baseColor:
+                  type: string
+                  description: Base color to use for the SynBioHub instance
+                showModuleInteractions:
+                  type: boolean
+                  description: Should module interactions be shown using VisBol?
+                logo:
+                  type: string
+                  format: binary
+                  description: Logo image file
+              required:
+                - instanceName
+                - frontPageText
+                - baseColor
+      responses:
+        '200':
+          description: Theme updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - Theme Administration
+
+  # User Management Endpoints
+  /admin/users:
+    get:
+      summary: View Users Config
+      description: View the current users
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of current users
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - User Administration
+    post:
+      summary: Update Users Config
+      description: Update the user config
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                allowPublicSignup:
+                  type: boolean
+                  description: Flag indicating if public signup is allowed
+      responses:
+        '200':
+          description: User config updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - User Administration
+
   /admin/newUser:
     post:
-      summary: Create new user
-      description: Creates a new user account
+      summary: Create New User
+      description: Create a new user
       security:
         - userToken: []
       requestBody:
@@ -126,29 +827,26 @@ paths:
               properties:
                 username:
                   type: string
-                  description: Username for the new user
+                  description: The username of new user
                 name:
                   type: string
-                  description: Full name of the new user
+                  description: The name of the new user
                 email:
                   type: string
                   format: email
-                  description: Email address of the new user
+                  description: The email of the new user
                 affiliation:
                   type: string
-                  description: Affiliation of the new user
+                  description: The affiliation of the new user
                 isMember:
-                  type: string
-                  enum: ["0", "1"]
-                  description: Whether the user is a member (1) or not (0)
+                  type: boolean
+                  description: Is the new user a member of the team?
                 isCurator:
-                  type: string
-                  enum: ["0", "1"] 
-                  description: Whether the user is a curator (1) or not (0)
+                  type: boolean
+                  description: Is the new user a curator?
                 isAdmin:
-                  type: string
-                  enum: ["0", "1"]
-                  description: Whether the user is an admin (1) or not (0)
+                  type: boolean
+                  description: Is the new user an admin?
               required:
                 - username
                 - name
@@ -156,13 +854,84 @@ paths:
       responses:
         '200':
           description: User created successfully
-        '400':
-          description: Invalid user data
         '401':
-          description: Unauthorized - missing or invalid token
+          description: Unauthorized - invalid or missing token
         '403':
-          description: Forbidden - user is not an administrator
-        '409':
-          description: Username or email already exists
+          description: Forbidden - user is not an admin
       tags:
-        - Administration
+        - User Administration
+
+  /admin/updateUser:
+    post:
+      summary: Update User
+      description: Update a user's settings
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The ID of the user to update
+                name:
+                  type: string
+                  description: The name of the user to update to
+                email:
+                  type: string
+                  format: email
+                  description: The email of the user to update to
+                affiliation:
+                  type: string
+                  description: The affiliation of the user to update to
+                isMember:
+                  type: boolean
+                  description: Is this user a member?
+                isCurator:
+                  type: boolean
+                  description: Is this user a curator?
+                isAdmin:
+                  type: boolean
+                  description: Is this user an admin?
+              required:
+                - id
+      responses:
+        '200':
+          description: User updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - User Administration
+
+  /admin/deleteUser:
+    post:
+      summary: Delete User
+      description: Delete a user
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The ID of user to delete
+              required:
+                - id
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an admin
+      tags:
+        - User Administration

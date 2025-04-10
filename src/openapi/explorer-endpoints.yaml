@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub SBOLExplorer API"
+  version: "1.0.0"
+  description: "API endpoints for managing SBOLExplorer configuration in SynBioHub"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token with admin privileges
+
+paths:
+  /admin/explorerlog:
+    get:
+      summary: View SBOLExplorer Log
+      description: View the SBOLExplorer log
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer log contents
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - SBOLExplorer
+        
+  /admin/explorerIndexingLog:
+    get:
+      summary: View SBOLExplorer Indexing Log
+      description: View the SBOLExplorer index log
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer indexing log contents
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - SBOLExplorer
+        
+  /admin/explorer:
+    get:
+      summary: View SBOLExplorer Config
+      description: View the current SBOLExplorer configuration
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Current SBOLExplorer configuration
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - SBOLExplorer
+        
+    post:
+      summary: Update SBOLExplorer Config
+      description: Update the SBOLExplorer configuration
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                useSBOLExplorer:
+                  type: string
+                  description: Boolean indicating whether SBOLExplorer is to be used or not
+                  enum: ["true", "false"]
+                SBOLExplorerEndpoint:
+                  type: string
+                  format: uri
+                  description: The endpoint where SBOLExplorer can be found
+                useDistributedSearch:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Boolean indicating whether distributed search should be used
+                pagerankTolerance:
+                  type: string
+                  description: The Pagerank tolerance factor
+                uclustIdentity:
+                  type: string
+                  description: The UClust clustering identity
+                synbiohubPublicGraph:
+                  type: string
+                  description: The public graph name for SynBioHub
+                elasticsearchEndpoint:
+                  type: string
+                  format: uri
+                  description: The endpoint where Elasticsearch can be found
+                elasticsearchIndexName:
+                  type: string
+                  description: The Elasticsearch index name
+                sparqlEndpoint:
+                  type: string
+                  format: uri
+                  description: The Virtuoso SPARQL endpoint
+                useCron:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Update the index automatically
+                cronDay:
+                  type: string
+                  description: How often the index is automatically updated
+                whichSearch:
+                  type: string
+                  enum: ["usearch", "vsearch"]
+                  description: Which algorithms to use
+              required:
+                - useSBOLExplorer
+                - SBOLExplorerEndpoint
+      responses:
+        '200':
+          description: SBOLExplorer configuration updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - SBOLExplorer
+        
+  /admin/explorerUpdateIndex:
+    post:
+      summary: Update SBOLExplorer Index
+      description: Updates SBOLExplorer index
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: SBOLExplorer index update triggered successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - SBOLExplorer

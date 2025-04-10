@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Remotes Management API"
+  version: "1.0.0"
+  description: "API endpoints for managing remote repositories in SynBioHub"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token with admin privileges
+
+paths:
+  /admin/remotes:
+    get:
+      summary: View Remotes
+      description: View current remote repositories
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: List of current remote repositories
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Current remote repositories information
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Remotes Management
+
+  /admin/saveRemote:
+    post:
+      summary: Save Benchling Remote
+      description: Save a new Benchling remote repository
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["benchling"]
+                  description: Type of the remote (Benchling)
+                id:
+                  type: string
+                  description: Id of the Benchling remote
+                url:
+                  type: string
+                  format: uri
+                  description: URL for the Benchling remote
+                benchlingApiToken:
+                  type: string
+                  description: API token for the Benchling remote
+                rejectUnauthorized:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Whether to check SSL certificate
+                  default: "true"
+                folderPrefix:
+                  type: string
+                  description: Prefix to use for folders on Benchling
+                sequenceSuffix:
+                  type: string
+                  description: Suffix to use for sequences found on Benchling
+                defaultFolderId:
+                  type: string
+                  description: Default folder on Benchling to access
+                isPublic:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Should the remote be visible publicly?
+                  default: "true"
+                rootCollectionDisplayId:
+                  type: string
+                  description: Display id for the root collection on the remote
+                rootCollectionName:
+                  type: string
+                  description: Name for the root collection on the remote
+                rootCollectionDescription:
+                  type: string
+                  description: Description for the root collection on the remote
+              required:
+                - type
+                - id
+                - benchlingApiToken
+      responses:
+        '200':
+          description: Remote saved successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Remotes Management
+
+  /admin/saveRemote/ice:
+    post:
+      summary: Save ICE Remote
+      description: Save a new ICE remote repository
+      security:
+        - userToken: []
+      operationId: saveIceRemote
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["ice"]
+                  description: Type of the remote (ICE)
+                id:
+                  type: string
+                  description: Id of the ICE remote
+                url:
+                  type: string
+                  format: uri
+                  description: URL for the ICE remote
+                iceApiTokenClient:
+                  type: string
+                  description: ICE API token client
+                iceApiToken:
+                  type: string
+                  description: ICE API token
+                iceApiTokenOwner:
+                  type: string
+                  description: ICE API token owner
+                iceCollection:
+                  type: string
+                  description: ICE collection
+                rejectUnauthorized:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Whether to check SSL certificate
+                  default: "true"
+                folderPrefix:
+                  type: string
+                  description: Prefix to use for folders on ICE
+                sequenceSuffix:
+                  type: string
+                  description: Suffix to use for sequences found on ICE
+                defaultFolderId:
+                  type: string
+                  description: Default folder on ICE to access
+                groupId:
+                  type: string
+                  description: Group id on ICE
+                pi:
+                  type: string
+                  description: Principal Investigator name
+                piEmail:
+                  type: string
+                  format: email
+                  description: Principal Investigator email
+                isPublic:
+                  type: string
+                  enum: ["true", "false"]
+                  description: Should the remote be visible publicly?
+                  default: "true"
+                partNumberPrefix:
+                  type: string
+                  description: Prefix to use for parts
+                rootCollectionDisplayId:
+                  type: string
+                  description: Display id for the root collection on the remote
+                rootCollectionName:
+                  type: string
+                  description: Name for the root collection on the remote
+                rootCollectionDescription:
+                  type: string
+                  description: Description for the root collection on the remote
+              required:
+                - type
+                - id
+                - url
+                - iceApiTokenClient
+                - iceApiToken
+                - iceApiTokenOwner
+      responses:
+        '200':
+          description: Remote saved successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Remotes Management
+
+  /admin/deleteRemote:
+    post:
+      summary: Delete Remote
+      description: Delete a remote repository
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Id of the remote configuration to remove
+              required:
+                - id
+      responses:
+        '200':
+          description: Remote deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Remotes Management

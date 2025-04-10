@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Theme API"
+  version: "1.0.0"
+  description: "API endpoints for managing SynBioHub theme configuration"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token with admin privileges
+
+paths:
+  /admin/theme:
+    get:
+      summary: View Theme
+      description: View the current theme configuration
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Current theme configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  instanceName:
+                    type: string
+                  frontPageText:
+                    type: string
+                  baseColor:
+                    type: string
+                  showModuleInteractions:
+                    type: boolean
+                  logo:
+                    type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Theme Configuration
+        
+    post:
+      summary: Update Theme
+      description: Update the theme configuration
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                instanceName:
+                  type: string
+                  description: Name of the SynBioHub instance
+                frontPageText:
+                  type: string
+                  description: Text to show on front page of the SynBioHub instance
+                baseColor:
+                  type: string
+                  description: Base color to use for this SynBioHub instance
+                showModuleInteractions:
+                  type: string
+                  enum: ["ok", "yes"]
+                  description: Should module interactions be shown using VisBol?
+                logo:
+                  type: string
+                  format: binary
+                  description: Logo file to upload
+      responses:
+        '200':
+          description: Theme configuration updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Theme Configuration

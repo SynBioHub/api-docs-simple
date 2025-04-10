@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info:
+  title: "SynBioHub Registry Management API"
+  version: "1.0.0"
+  description: "API endpoints for managing registries in SynBioHub"
+  
+servers:
+  - url: 'https://synbiohub.org'
+    description: Main SynBioHub instance
+  - url: 'http://localhost:7777'
+    description: Local development instance
+
+components:
+  securitySchemes:
+    userToken:
+      type: apiKey
+      in: header
+      name: X-authorization
+      description: Authentication token with admin privileges
+
+paths:
+  /admin/deleteRegistry:
+    post:
+      summary: Delete Registry
+      description: Delete a registry from the Web of Registries
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  format: uri
+                  description: URI prefix of the registry to delete
+              required:
+                - uri
+      responses:
+        '200':
+          description: Registry deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+        '404':
+          description: Registry not found
+      tags:
+        - Registry Management
+
+  /admin/setAdministratorEmail:
+    post:
+      summary: Set Administrator Email
+      description: Update Web Of Registries administrator email
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                administratorEmail:
+                  type: string
+                  format: email
+                  description: Administrator email address
+              required:
+                - administratorEmail
+      responses:
+        '200':
+          description: Administrator email updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Registry Management
+
+  /admin/retrieveFromWebOfRegistries:
+    post:
+      summary: Retrieve From Web Of Registries
+      description: Update registries from Web-of-Registries
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Registries updated successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Registry Management
+
+  /admin/federate:
+    post:
+      summary: Federate
+      description: Send request to join Web-of-Registries for a SynBioHub instance
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                administratorEmail:
+                  type: string
+                  format: email
+                  description: Administrator email address
+                webOfRegistries:
+                  type: string
+                  format: uri
+                  description: URL for the Web-of-Registries
+              required:
+                - administratorEmail
+                - webOfRegistries
+      responses:
+        '200':
+          description: Federation request sent successfully
+        '401':
+          description: Unauthorized - invalid or missing token
+        '403':
+          description: Forbidden - user is not an administrator
+      tags:
+        - Registry Management

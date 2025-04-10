@@ -159,3 +159,316 @@ paths:
           description: Unauthorized - invalid or missing token
       tags:
         - Search
+
+  /shared:
+    get:
+      summary: Search shared objects
+      description: Returns metadata for objects that have been shared with the current user
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Shared objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+      tags:
+        - Search
+
+  /{uri}/subCollections:
+    get:
+      summary: Search sub-collections
+      description: Returns metadata for sub-collections of the specified collection
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the parent collection
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Sub-collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+
+  /{uri}/twins:
+    get:
+      summary: Search twins
+      description: Returns other components that have the same sequence
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find twins for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Twin components
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+
+  /{uri}/similar:
+    get:
+      summary: Search similar components
+      description: Returns components with similar sequences
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find similar components for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Similar components
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+
+  /{uri}/uses:
+    get:
+      summary: Search uses
+      description: Returns components that use the specified component
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find uses for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Components using the specified component
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+      tags:
+        - Search
+
+  /count:
+    get:
+      summary: Count objects by type
+      description: Returns the number of objects of the specified type
+      parameters:
+        - name: objectType
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The type of object to count
+          example: ComponentDefinition
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Count of objects
+          content:
+            text/plain:
+              schema:
+                type: integer
+      tags:
+        - Search
+
+  /sparql:
+    post:
+      summary: SPARQL query
+      description: Executes a SPARQL query on the SynBioHub database
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: SPARQL query
+              required:
+                - query
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: SPARQL query results
+          content:
+            application/json:
+              schema:
+                type: object
+      tags:
+        - Search
+
+  /sequenceSearch:
+    post:
+      summary: Sequence search
+      description: Search for sequences matching the provided sequence
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                sequence:
+                  type: string
+                  description: The sequence to search for
+                limit:
+                  type: integer
+                  description: Maximum number of results to return
+                  default: 10
+                offset:
+                  type: integer
+                  description: Result offset for pagination
+                  default: 0
+                maxrejects:
+                  type: integer
+                  description: Maximum number of non-matching target sequences to consider before stopping the search
+                  default: 100
+                id:
+                  type: number
+                  format: float
+                  minimum: 0
+                  maximum: 1
+                  description: Reject sequence match if pairwise identity is lower than this number
+                  default: 0.8
+                iddef:
+                  type: integer
+                  enum: [0, 1, 2, 3, 4]
+                  description: Pairwise identity definition
+                  default: 2
+              required:
+                - sequence
+      security:
+        - userToken: []
+        - {}
+      responses:
+        '200':
+          description: Sequence search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                      format: uri
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    displayId:
+                      type: string
+                    version:
+                      type: string
+                    percentMatch:
+                      type: string
+                    strandAlignment:
+                      type: string
+                    CIGAR:
+                      type: string
+      tags:
+        - Search

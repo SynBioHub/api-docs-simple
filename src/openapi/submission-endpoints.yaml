@@ -34,38 +34,30 @@ paths:
               properties:
                 id:
                   type: string
-                  description: A user-defined string identifier for the submission (alphanumeric and underscores only)
-                  example: "BBa_R0010"
+                  description: A user-defined string identifier for the submission, alphanumeric and underscores only
                 version:
                   type: string
                   description: The version string to associate with the submission
-                  example: "1"
                 name:
                   type: string
-                  description: The name to assign to the submission
-                rootCollections:
-                  type: string
-                  description: The URI of the collection to submit into (when adding to existing collection)
+                  description: The name string to assign to the submission
                 description:
                   type: string
-                  description: The description to assign to the submission
+                  description: The description string to assign to the submission
                 citations:
                   type: string
-                  description: A list of comma separated PubMed IDs of citations
+                  description: A list of comma separated pubmed IDs of citations to store with the submission
                 overwrite_merge:
                   type: string
+                  description: "0 prevent if submission exists, 1 overwrite if submission exists, 2 to merge and prevent if submission exists, 3 to merge and overwrite matching URIs"
                   enum: ["0", "1", "2", "3"]
-                  description: >
-                    How to handle existing submissions:
-                    0 = prevent if submission exists, 
-                    1 = overwrite if submission exists, 
-                    2 = merge and prevent if submission exists, 
-                    3 = merge and overwrite matching URIs
-                  default: "0"
                 file:
                   type: string
                   format: binary
                   description: Contents of an SBOL2, SBOL1, GenBank, FASTA, GFF3, ZIP, or COMBINE Archive file
+                rootCollections:
+                  type: string
+                  description: The URI of the collection to be submitted into
               required:
                 - file
       responses:
@@ -118,7 +110,7 @@ paths:
               properties:
                 id:
                   type: string
-                  description: The ID for the new collection
+                  description: The id for the new collection
                 version:
                   type: string
                   description: The version for the new collection
@@ -130,17 +122,17 @@ paths:
                   description: The description for the new collection (optional, default is existing description)
                 citations:
                   type: string
-                  description: The comma-separated list of PubMed IDs (optional, default is existing citations)
+                  description: The comma-separated list of PubMed ids (optional, default is existing citations)
                 tabState:
                   type: string
                   enum: ["new", "existing"]
-                  description: Use "new" for moving to a new public collection, "existing" for moving into an existing one
+                  description: Use "new" for moving to a new public collection, and "existing" if moving into an existing public collection
                 collections:
                   type: string
-                  description: If moving into an existing collection, this is the URI of the collection
+                  format: uri
+                  description: If moving into an existing collection, the URI of the collection
               required:
                 - id
-                - version
                 - tabState
       responses:
         '200':
@@ -300,7 +292,7 @@ paths:
                 collectionIcon:
                   type: string
                   format: binary
-                  description: The image file to use as the collection icon
+                  description: The desired collection icon
               required:
                 - collectionIcon
       responses:
