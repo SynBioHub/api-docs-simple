@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Permission API"
   version: "1.0.0"
   description: "API endpoints for managing permissions on SynBioHub"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -42,24 +42,19 @@ paths:
                 user:
                   type: string
                   description: The user ID of the owner being added
-                uri:
-                  type: string
-                  format: uri
-                  description: The URI of the object to add an owner to
               required:
                 - user
-                - uri
       responses:
-        '200':
+        "200":
           description: Owner added successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user does not have permission
       tags:
         - Permission
 
-  /{uri}/removeOwner/{username}:
+  /{uri}/removeOwner:
     post:
       summary: Remove Owner
       description: Remove an owner from an object
@@ -70,12 +65,6 @@ paths:
           schema:
             type: string
           description: The URI of the object
-        - name: username
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The username of the owner to remove
       security:
         - userToken: []
       requestBody:
@@ -85,18 +74,17 @@ paths:
             schema:
               type: object
               properties:
-                userUri:
+                user:
                   type: string
-                  format: uri
-                  description: The user URI of the owner being removed
+                  description: The username of the owner being removed
               required:
-                - userUri
+                - user
       responses:
-        '200':
+        "200":
           description: Owner removed successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user does not have permission
       tags:
         - Permission

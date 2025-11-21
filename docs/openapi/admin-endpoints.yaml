@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Administration API"
   version: "1.0.0"
   description: "API endpoints for SynBioHub administration"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -20,107 +20,112 @@ components:
 
 paths:
   # General Admin Endpoints
-  /admin:
+  /status:
     get:
       summary: Get Status
-      description: Returns configuration options for SynBioHub
+      description: Returns the status of the SynBioHub instance
       security:
         - userToken: []
       responses:
-        '200':
-          description: Configuration options
+        "200":
+          description: SynBioHub status
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-        '401':
+                type: object
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Administration
 
   /admin/sparql:
-    get:
+    post:
       summary: SPARQL Admin Query
       description: Execute a SPARQL admin query
-      parameters:
-        - name: query
-          in: query
-          required: true
-          schema:
-            type: string
-          description: The SPARQL query to execute
       security:
         - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The SPARQL query to execute
+              required:
+                - query
       responses:
-        '200':
+        "200":
           description: Query results in JSON format
           content:
             application/json:
               schema:
                 type: object
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Administration
 
-  /admin/virtuoso:
+  /virtuosoStatus:
     get:
       summary: Get Virtuoso Status
       description: Returns 200 when Virtuoso is alive and 500 when it is not
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Virtuoso is alive
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
-        '500':
+        "500":
           description: Virtuoso is not alive
       tags:
         - Administration
 
-  /admin/graphs:
+  /graphs:
     get:
       summary: View Graphs
       description: Returns existing graphs and their number of triples
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of graphs and their sizes
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Administration
 
-  /admin/log:
+  /log:
     get:
       summary: View Log
       description: Returns the SynBioHub log file
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Log file contents
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Administration
@@ -133,15 +138,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Current mail configuration
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Mail Administration
@@ -168,11 +173,11 @@ paths:
                 - key
                 - fromEmail
       responses:
-        '200':
+        "200":
           description: Mail configuration updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Mail Administration
@@ -185,20 +190,18 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of current plugins
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Plugin Administration
-
-  /admin/savePlugin:
     post:
       summary: Save Plugin
       description: Save a new plugin
@@ -230,11 +233,11 @@ paths:
                 - name
                 - url
       responses:
-        '200':
+        "200":
           description: Plugin saved successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Plugin Administration
@@ -262,11 +265,11 @@ paths:
                 - id
                 - category
       responses:
-        '200':
+        "200":
           description: Plugin deleted successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Plugin Administration
@@ -279,20 +282,18 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of current registries
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
-
-  /admin/saveRegistry:
     post:
       summary: Save Registry
       description: Save a new registry
@@ -316,11 +317,11 @@ paths:
                 - uri
                 - url
       responses:
-        '200':
+        "200":
           description: Registry saved successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
@@ -344,11 +345,11 @@ paths:
               required:
                 - uri
       responses:
-        '200':
+        "200":
           description: Registry deleted successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
@@ -373,11 +374,11 @@ paths:
               required:
                 - administratorEmail
       responses:
-        '200':
+        "200":
           description: Administrator email updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
@@ -389,11 +390,11 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Registries updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
@@ -423,11 +424,11 @@ paths:
                 - administratorEmail
                 - webOfRegistries
       responses:
-        '200':
+        "200":
           description: Federation request sent successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Registry Administration
@@ -440,20 +441,18 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of current remotes
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Remotes Administration
-
-  /admin/saveRemote:
     post:
       summary: Save Remote
       description: Save a new remote (Benchling or ICE)
@@ -533,11 +532,11 @@ paths:
                 - type
                 - id
       responses:
-        '200':
+        "200":
           description: Remote saved successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Remotes Administration
@@ -561,11 +560,11 @@ paths:
               required:
                 - id
       responses:
-        '200':
+        "200":
           description: Remote deleted successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Remotes Administration
@@ -578,15 +577,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Current SBOLExplorer configuration
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - SBOLExplorer
@@ -640,11 +639,11 @@ paths:
                   enum: [usearch, vsearch]
                   description: Which algorithms to use, 'usearch' or 'vsearch'
       responses:
-        '200':
+        "200":
           description: SBOLExplorer configuration updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - SBOLExplorer
@@ -656,15 +655,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: SBOLExplorer log contents
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - SBOLExplorer
@@ -676,15 +675,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: SBOLExplorer indexing log contents
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - SBOLExplorer
@@ -696,11 +695,11 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: SBOLExplorer index updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - SBOLExplorer
@@ -713,15 +712,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Current theme configuration
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Theme Administration
@@ -758,11 +757,11 @@ paths:
                 - frontPageText
                 - baseColor
       responses:
-        '200':
+        "200":
           description: Theme updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - Theme Administration
@@ -775,15 +774,15 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of current users
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User Administration
@@ -803,11 +802,11 @@ paths:
                   type: boolean
                   description: Flag indicating if public signup is allowed
       responses:
-        '200':
+        "200":
           description: User config updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User Administration
@@ -852,11 +851,11 @@ paths:
                 - name
                 - email
       responses:
-        '200':
+        "200":
           description: User created successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User Administration
@@ -899,11 +898,11 @@ paths:
               required:
                 - id
       responses:
-        '200':
+        "200":
           description: User updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User Administration
@@ -927,11 +926,11 @@ paths:
               required:
                 - id
       responses:
-        '200':
+        "200":
           description: User deleted successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User Administration

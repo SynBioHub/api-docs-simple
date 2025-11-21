@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Edit API"
   version: "1.0.0"
   description: "API endpoints for editing objects in SynBioHub"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -19,10 +19,17 @@ components:
       description: Authentication token required for all edit endpoints
 
 paths:
-  /updateMutableDescription:
+  /{uri}/updateMutableDescription:
     post:
       summary: Edit Mutable Description
       description: Edit the mutable description of an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object to update
       security:
         - userToken: []
       requestBody:
@@ -32,30 +39,32 @@ paths:
             schema:
               type: object
               properties:
-                uri:
-                  type: string
-                  format: uri
-                  description: The URI of the object to update
                 value:
                   type: string
                   description: The new value for the mutable description
               required:
-                - uri
                 - value
       responses:
-        '200':
+        "200":
           description: Description updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
 
-  /updateMutableNotes:
+  /{uri}/updateMutableNotes:
     post:
       summary: Edit Mutable Notes
       description: Edit the mutable notes of an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object to update
       security:
         - userToken: []
       requestBody:
@@ -65,30 +74,32 @@ paths:
             schema:
               type: object
               properties:
-                uri:
-                  type: string
-                  format: uri
-                  description: The URI of the object to update
                 value:
                   type: string
                   description: The new value for the mutable notes
               required:
-                - uri
                 - value
       responses:
-        '200':
+        "200":
           description: Notes updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
 
-  /updateMutableSource:
+  /{uri}/updateMutableSource:
     post:
       summary: Edit Mutable Source
       description: Edit the mutable source of an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object to update
       security:
         - userToken: []
       requestBody:
@@ -98,30 +109,32 @@ paths:
             schema:
               type: object
               properties:
-                uri:
-                  type: string
-                  format: uri
-                  description: The URI of the object to update
                 value:
                   type: string
                   description: The new value for the mutable source
               required:
-                - uri
                 - value
       responses:
-        '200':
+        "200":
           description: Source updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
 
-  /updateCitations:
+  /{uri}/updateCitations:
     post:
       summary: Edit Citations
       description: Edit the citations of an object
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the object to update
       security:
         - userToken: []
       requestBody:
@@ -131,22 +144,17 @@ paths:
             schema:
               type: object
               properties:
-                uri:
-                  type: string
-                  format: uri
-                  description: The URI of the object to update
                 value:
                   type: string
                   description: The new value for the citation
               required:
-                - uri
                 - value
       responses:
-        '200':
+        "200":
           description: Citations updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
@@ -191,11 +199,11 @@ paths:
                 - previous
                 - object
       responses:
-        '200':
+        "200":
           description: Field edited successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
@@ -236,11 +244,11 @@ paths:
               required:
                 - object
       responses:
-        '200':
+        "200":
           description: Field added successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
       tags:
         - Edit
@@ -281,83 +289,11 @@ paths:
               required:
                 - object
       responses:
-        '200':
+        "200":
           description: Field removed successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
-      tags:
-        - Edit
-
-  /{uri}/addToCollection:
-    post:
-      summary: Add to Collection
-      description: Add an object to a collection
-      parameters:
-        - name: uri
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The URI of the object to add
-      security:
-        - userToken: []
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                collections:
-                  type: string
-                  format: uri
-                  description: The URI of the collection to add to
-              required:
-                - collections
-      responses:
-        '200':
-          description: Object added to collection successfully
-        '401':
-          description: Unauthorized - invalid or missing token
-        '403':
-          description: Forbidden - user does not have permission
-      tags:
-        - Edit
-
-  /{uri}/removeMembership:
-    post:
-      summary: Remove Membership
-      description: Remove an object's membership from a collection
-      parameters:
-        - name: uri
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The URI of the collection
-      security:
-        - userToken: []
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                member:
-                  type: string
-                  format: uri
-                  description: The URI of the member to remove
-              required:
-                - member
-      responses:
-        '200':
-          description: Membership removed successfully
-        '401':
-          description: Unauthorized - invalid or missing token
-        '403':
-          description: Forbidden - user does not have permission
       tags:
         - Edit

@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Submission API"
   version: "1.0.0"
   description: "API endpoints for managing submissions on SynBioHub"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -61,17 +61,17 @@ paths:
               required:
                 - file
       responses:
-        '200':
+        "200":
           description: Submission successful
           content:
             text/plain:
               schema:
                 type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '415':
+        "415":
           description: Unsupported media type - file format not recognized
-        '500':
+        "500":
           description: Server error processing submission
       tags:
         - Submission
@@ -135,13 +135,13 @@ paths:
                 - id
                 - tabState
       responses:
-        '200':
+        "200":
           description: Collection made public successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this collection
-        '404':
+        "404":
           description: Collection not found
       tags:
         - Submission
@@ -172,13 +172,13 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Collection removed successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this collection
-        '404':
+        "404":
           description: Collection not found
       tags:
         - Submission
@@ -209,13 +209,13 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Object removed successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Submission
@@ -246,13 +246,13 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Object replaced successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Submission
@@ -296,15 +296,115 @@ paths:
               required:
                 - collectionIcon
       responses:
-        '200':
+        "200":
           description: Collection icon updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an owner of this collection
-        '404':
+        "404":
           description: Collection not found
-        '415':
+        "415":
           description: Unsupported media type - file format not recognized
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/addToCollection:
+    post:
+      summary: Add to Collection
+      description: Add member specified by the URI to a collection specified by the collections parameter
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                collections:
+                  type: string
+                  format: uri
+                  description: The URI of collection to add a member to
+              required:
+                - collections
+      responses:
+        "200":
+          description: Member added to collection successfully
+        "401":
+          description: Unauthorized - invalid or missing token
+        "403":
+          description: Forbidden - user is not an owner of this object
+        "404":
+          description: Object not found
+      tags:
+        - Submission
+
+  /{prefix}/{designid}/{version}/removeMembership:
+    post:
+      summary: Remove Membership
+      description: Remove a member specified by the member parameter of a collection specified by the URI
+      parameters:
+        - name: prefix
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The collection prefix
+        - name: designid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The design ID
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The version number
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                member:
+                  type: string
+                  format: uri
+                  description: The URI of the object to remove as a member
+              required:
+                - member
+      responses:
+        "200":
+          description: Membership removed successfully
+        "401":
+          description: Unauthorized - invalid or missing token
+        "403":
+          description: Forbidden - user is not an owner of this object
+        "404":
+          description: Object not found
       tags:
         - Submission

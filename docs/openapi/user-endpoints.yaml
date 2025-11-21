@@ -95,11 +95,11 @@ paths:
                 affiliation:
                   type: string
                   description: User's affiliation (e.g., university, company)
-                password:
+                password1:
                   type: string
                   format: password
                   description: Desired password
-                passwordConfirm:
+                password2:
                   type: string
                   format: password
                   description: Password confirmation
@@ -107,8 +107,8 @@ paths:
                 - username
                 - name
                 - email
-                - password
-                - passwordConfirm
+                - password1
+                - password2
       responses:
         '200':
           description: Registration successful
@@ -142,6 +142,40 @@ paths:
       tags:
         - User
 
+  /setNewPassword:
+    post:
+      summary: Set New Password
+      description: Resets the user's password with the provided token and two copies of the new password.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Token received by email to reset a password
+                password1:
+                  type: string
+                  format: password
+                  description: New password
+                password2:
+                  type: string
+                  format: password
+                  description: Confirm new password
+              required:
+                - token
+                - password1
+                - password2
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Bad request
+      tags:
+        - User
+
   /profile:
     get:
       summary: Get User Profile
@@ -156,22 +190,43 @@ paths:
               schema:
                 type: object
                 properties:
-                  username:
-                    type: string
+                  id:
+                    type: integer
                   name:
+                    type: string
+                  username:
                     type: string
                   email:
                     type: string
                   affiliation:
                     type: string
+                  password:
+                    type: string
+                  graphUri:
+                    type: string
                   isAdmin:
                     type: boolean
+                  resetPasswordLink:
+                    type: string
+                  isCurator:
+                    type: boolean
+                  isMember:
+                    type: boolean
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  user_external_profiles:
+                    type: array
+                    items:
+                      type: object
         '401':
           description: Unauthorized - invalid or missing token
       tags:
         - User
 
-  /updateProfile:
     post:
       summary: Update Profile
       description: Update the current user's profile information
@@ -194,6 +249,14 @@ paths:
                   type: string
                   format: email
                   description: New email address
+                password1:
+                  type: string
+                  format: password
+                  description: New password
+                password2:
+                  type: string
+                  format: password
+                  description: New password confirmation
               required:
                 - name
                 - email
@@ -202,45 +265,6 @@ paths:
           description: Profile updated successfully
         '401':
           description: Unauthorized - invalid or missing token
-        '400':
-          description: Bad request - validation errors
-      tags:
-        - User
-
-  /updatePassword:
-    post:
-      summary: Update Password
-      description: Update the current user's password
-      security:
-        - userToken: []
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                currentPassword:
-                  type: string
-                  format: password
-                  description: Current password
-                newPassword:
-                  type: string
-                  format: password
-                  description: New password
-                newPasswordConfirm:
-                  type: string
-                  format: password
-                  description: New password confirmation
-              required:
-                - currentPassword
-                - newPassword
-                - newPasswordConfirm
-      responses:
-        '200':
-          description: Password updated successfully
-        '401':
-          description: Unauthorized - invalid current password
         '400':
           description: Bad request - validation errors
       tags:
