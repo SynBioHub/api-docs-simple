@@ -4,7 +4,7 @@
   "description": "Simple API documentation for SynBioHub",
   "scripts": {
     "generate-sidebar": "node scripts/generate-sidebar.js",
-    "start": "npx http-server -p 8080 ."
+    "start": "npx http-server -p 8080 ./docs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
