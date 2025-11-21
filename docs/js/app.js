@@ -1,7 +1,28 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { HTTPSnippet } from 'https://esm.sh/httpsnippet-lite@3.0.5';
+
+document.addEventListener('DOMContentLoaded', function () {
   // First load the sidebar data, then initialize the rest of the app
   loadSidebarData().then(initializeApp);
-  
+
+  // Helper to convert Swagger UI request to HAR
+  function requestToHar(request) {
+    return {
+      method: request.method,
+      url: request.url,
+      httpVersion: "HTTP/1.1",
+      cookies: [],
+      headers: Object.keys(request.headers || {}).map(key => ({
+        name: key,
+        value: request.headers[key]
+      })),
+      queryString: [], // Query string is usually already in the URL
+      postData: request.body ? {
+        mimeType: request.headers['Content-Type'] || 'application/json',
+        text: typeof request.body === 'string' ? request.body : JSON.stringify(request.body)
+      } : undefined
+    };
+  }
+
   function loadSidebarData() {
     return fetch('./sidebar-data.json')
       .then(response => {
@@ -13,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         // Build the sidebar dynamically
         const sidebarNav = document.querySelector('.sidebar nav ul');
-        
+
         // Keep the Home link as the first item
         const homeLink = sidebarNav.querySelector('.home-link');
         if (homeLink) {
@@ -23,32 +44,32 @@ document.addEventListener('DOMContentLoaded', function() {
           // Otherwise clear and create a new one
           sidebarNav.innerHTML = '<li><a href="#" data-api="about" class="home-link" title="Home page and API overview">Home</a></li>';
         }
-        
+
         // Add the API links from the data
         data.forEach(item => {
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.setAttribute('href', '#');
           a.setAttribute('data-api', item.id);
-          
+
           // Ensure description is used for title attribute (hover text)
           if (item.description && item.description.trim() !== '') {
             a.setAttribute('title', item.description);
           } else {
             a.setAttribute('title', `${item.title} API documentation`);
           }
-          
+
           a.textContent = item.title;
-          
+
           // Add a span for tooltip if needed (optional enhancement)
           if (item.description && item.description.trim() !== '') {
             a.classList.add('has-tooltip');
           }
-          
+
           li.appendChild(a);
           sidebarNav.appendChild(li);
         });
-        
+
         return data; // Return the data for further use
       })
       .catch(error => {
@@ -56,27 +77,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return []; // Return empty array in case of error
       });
   }
-  
+
   function initializeApp(sidebarData) {
     // Initialize with the about section as default
     showAboutSection();
-    
+
     // Initialize the resizable sidebar
     initResizableSidebar();
-  
+
     // Mobile menu toggle functionality
     const mobileMenuButton = document.querySelector('.mobile-menu-button');
     const sidebar = document.querySelector('.sidebar');
     const sidebarOverlay = document.querySelector('.sidebar-overlay');
-    
-    mobileMenuButton.addEventListener('click', function() {
+
+    mobileMenuButton.addEventListener('click', function () {
       sidebar.classList.toggle('active');
       sidebarOverlay.classList.toggle('active');
       document.body.classList.toggle('sidebar-open');
     });
-    
+
     // Close sidebar when clicking outside or on a link (mobile only)
-    sidebarOverlay.addEventListener('click', function() {
+    sidebarOverlay.addEventListener('click', function () {
       sidebar.classList.remove('active');
       sidebarOverlay.classList.remove('active');
       document.body.classList.remove('sidebar-open');
@@ -85,15 +106,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up logo click event
     const logoLink = document.querySelector('.logo-link');
     if (logoLink) {
-      logoLink.addEventListener('click', function(e) {
+      logoLink.addEventListener('click', function (e) {
         e.preventDefault();
         showAboutSection();
-        
+
         // Update active class in sidebar
         document.querySelectorAll('.sidebar nav a').forEach(link => {
           link.classList.remove('active');
         });
-        
+
         // Find and activate the Home link
         const homeLink = document.querySelector('.sidebar nav a[data-api="about"]');
         if (homeLink) {
@@ -101,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     }
-  
+
     // Set up navigation
     const navLinks = document.querySelectorAll('.sidebar nav a');
     navLinks.forEach(link => {
@@ -109,16 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if (link.getAttribute('data-api') === 'about') {
         link.classList.add('active');
       }
-      
-      link.addEventListener('click', function(e) {
+
+      link.addEventListener('click', function (e) {
         e.preventDefault();
-        
+
         // Remove active class from all links
         navLinks.forEach(l => l.classList.remove('active'));
-        
+
         // Add active class to clicked link
         this.classList.add('active');
-        
+
         // Load the selected API spec or show about section
         const apiName = this.getAttribute('data-api');
         if (apiName === 'about') {
@@ -127,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
           hideAboutSection();
           loadApiSpec(apiName);
         }
-        
+
         // Close sidebar on mobile after clicking a link
         if (window.innerWidth <= 768) {
           sidebar.classList.remove('active');
@@ -142,27 +163,27 @@ document.addEventListener('DOMContentLoaded', function() {
   function showAboutSection() {
     const aboutSection = document.getElementById('about-section');
     const swaggerUI = document.getElementById('swagger-ui');
-    
+
     if (aboutSection) {
       aboutSection.style.display = 'block';
     }
-    
+
     if (swaggerUI) {
       swaggerUI.style.display = 'none';
     }
-    
+
     // Update example commands for the about section
     updateExampleCommands('about');
   }
-  
+
   function hideAboutSection() {
     const aboutSection = document.getElementById('about-section');
     const swaggerUI = document.getElementById('swagger-ui');
-    
+
     if (aboutSection) {
       aboutSection.style.display = 'none';
     }
-    
+
     if (swaggerUI) {
       swaggerUI.style.display = 'block';
     }
@@ -174,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadApiSpec(apiName) {
     // Update the example commands based on the selected API
     updateExampleCommands(apiName);
-    
+
     // Check if the API spec file exists
     fetch(`./openapi/${apiName}.yaml`)
       .then(response => {
@@ -187,15 +208,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Completely remove the swagger-ui div and recreate it to avoid DOM conflicts
         const swaggerContainer = document.querySelector('#swagger-ui');
         const parentElement = swaggerContainer.parentElement;
-        
+
         // Remove the old container
         swaggerContainer.remove();
-        
+
         // Create a new container
         const newSwaggerContainer = document.createElement('div');
         newSwaggerContainer.id = 'swagger-ui';
         parentElement.insertBefore(newSwaggerContainer, parentElement.querySelector('.example-commands'));
-        
+
         // Initialize Swagger UI with the API spec
         swaggerUIInstance = SwaggerUIBundle({
           url: url,
@@ -207,6 +228,50 @@ document.addEventListener('DOMContentLoaded', function() {
           ],
           layout: "BaseLayout",
           supportedSubmitMethods: [], // Disable Try it out feature
+          requestSnippetsEnabled: true,
+          requestSnippets: {
+            generators: {
+              curl_bash: {
+                title: 'cURL (bash)',
+                syntax: 'bash',
+                fn: (req) => {
+                  try {
+                    const har = requestToHar(req);
+                    const snippet = new HTTPSnippet(har);
+                    return snippet.convert('shell', 'curl');
+                  } catch (e) {
+                    return 'curl command generation failed';
+                  }
+                }
+              },
+              python_requests: {
+                title: 'Python (requests)',
+                syntax: 'python',
+                fn: (req) => {
+                  try {
+                    const har = requestToHar(req);
+                    const snippet = new HTTPSnippet(har);
+                    return snippet.convert('python', 'requests');
+                  } catch (e) {
+                    return '# Python snippet generation failed';
+                  }
+                }
+              },
+              javascript_fetch: {
+                title: 'JavaScript (fetch)',
+                syntax: 'javascript',
+                fn: (req) => {
+                  try {
+                    const har = requestToHar(req);
+                    const snippet = new HTTPSnippet(har);
+                    return snippet.convert('javascript', 'fetch');
+                  } catch (e) {
+                    return '// JavaScript snippet generation failed';
+                  }
+                }
+              }
+            }
+          },
           syntaxHighlight: {
             activated: true,
             theme: "agate"
@@ -215,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => {
         console.error(error);
-        
+
         // Safely handle errors by recreating the container
         const swaggerContainer = document.querySelector('#swagger-ui');
         if (swaggerContainer) {
@@ -227,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
           errorDiv.textContent = `Error loading API specification: ${error.message}`;
           swaggerContainer.appendChild(errorDiv);
         }
-        
+
         // Reset the Swagger UI instance
         swaggerUIInstance = null;
       });
@@ -236,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateExampleCommands(apiName) {
     const exampleCommands = document.querySelector('.example-commands');
     let examples;
-    
+
     // Set different example commands based on the selected API
     switch (apiName) {
       case 'about':
@@ -275,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <p>Test the API with curl:</p>
           <pre><code>curl -X GET "https://synbiohub.org/public/igem/BBa_K1404008/1" -H "accept: application/json"</code></pre>`;
     }
-    
+
     exampleCommands.innerHTML = examples;
   }
 
@@ -287,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isDragging = false;
     let startX;
     let startWidth;
-    
+
     // Check if there's a saved width preference
     const savedSidebarWidth = localStorage.getItem('sidebarWidth');
     if (savedSidebarWidth) {
@@ -299,91 +364,91 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listeners for mouse drag operations
-    dragHandle.addEventListener('mousedown', function(e) {
+    dragHandle.addEventListener('mousedown', function (e) {
       isDragging = true;
       startX = e.clientX;
       startWidth = parseInt(window.getComputedStyle(sidebar).width);
-      
+
       // Add dragging classes
       dragHandle.classList.add('dragging');
       sidebar.classList.add('dragging');
       rightside.classList.add('dragging');
-      
+
       // Prevent text selection during drag
       document.body.style.userSelect = 'none';
       e.preventDefault();
     });
-    
-    document.addEventListener('mousemove', function(e) {
+
+    document.addEventListener('mousemove', function (e) {
       if (!isDragging) return;
-      
+
       const width = startWidth + (e.clientX - startX);
-      
+
       // Set minimum and maximum width constraints
       if (width >= 200 && width <= 500) {
         // Update CSS variable
         documentRoot.style.setProperty('--sidebar-width', width + 'px');
-        
+
         // Update the drag handle position
         dragHandle.style.left = width + 'px';
       }
     });
-    
-    document.addEventListener('mouseup', function() {
+
+    document.addEventListener('mouseup', function () {
       if (!isDragging) return;
-      
+
       isDragging = false;
-      
+
       // Remove dragging classes
       dragHandle.classList.remove('dragging');
       sidebar.classList.remove('dragging');
       rightside.classList.remove('dragging');
-      
+
       // Re-enable text selection
       document.body.style.userSelect = '';
-      
+
       // Save the new width preference
       const newWidth = parseInt(window.getComputedStyle(sidebar).width);
       localStorage.setItem('sidebarWidth', newWidth);
     });
-    
+
     // Touch support for mobile devices
-    dragHandle.addEventListener('touchstart', function(e) {
+    dragHandle.addEventListener('touchstart', function (e) {
       isDragging = true;
       startX = e.touches[0].clientX;
       startWidth = parseInt(window.getComputedStyle(sidebar).width);
-      
+
       // Add dragging classes
       dragHandle.classList.add('dragging');
       sidebar.classList.add('dragging');
       rightside.classList.add('dragging');
     });
-    
-    document.addEventListener('touchmove', function(e) {
+
+    document.addEventListener('touchmove', function (e) {
       if (!isDragging) return;
-      
+
       const width = startWidth + (e.touches[0].clientX - startX);
-      
+
       // Set minimum and maximum width constraints
       if (width >= 200 && width <= 500) {
         // Update CSS variable
         documentRoot.style.setProperty('--sidebar-width', width + 'px');
-        
+
         // Update the drag handle position
         dragHandle.style.left = width + 'px';
       }
     });
-    
-    document.addEventListener('touchend', function() {
+
+    document.addEventListener('touchend', function () {
       if (!isDragging) return;
-      
+
       isDragging = false;
-      
+
       // Remove dragging classes
       dragHandle.classList.remove('dragging');
       sidebar.classList.remove('dragging');
       rightside.classList.remove('dragging');
-      
+
       // Save the new width preference
       const newWidth = parseInt(window.getComputedStyle(sidebar).width);
       localStorage.setItem('sidebarWidth', newWidth);
