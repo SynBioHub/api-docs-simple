@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Search API"
   version: "1.0.0"
   description: API specification for searching content in SynBioHub
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -47,7 +47,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:
@@ -69,7 +69,7 @@ paths:
                       type: string
       tags:
         - Search
-  
+
   /searchCount/{query}:
     get:
       summary: Count search results
@@ -86,7 +86,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Count of matching items
           content:
             text/plain:
@@ -94,7 +94,7 @@ paths:
                 type: integer
       tags:
         - Search
-  
+
   /rootCollections:
     get:
       summary: Get root collections
@@ -103,7 +103,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: List of root collections
           content:
             application/json:
@@ -125,7 +125,7 @@ paths:
                       type: string
       tags:
         - Search
-        
+
   /manage:
     get:
       summary: View user submissions
@@ -133,7 +133,7 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: User submissions
           content:
             application/json:
@@ -155,7 +155,7 @@ paths:
                     uri:
                       type: string
                       format: uri
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
       tags:
         - Search
@@ -167,7 +167,7 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Shared objects
           content:
             application/json:
@@ -187,7 +187,7 @@ paths:
                       type: string
                     version:
                       type: string
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
       tags:
         - Search
@@ -207,7 +207,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Sub-collections
           content:
             application/json:
@@ -245,7 +245,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Twin components
           content:
             application/json:
@@ -268,6 +268,30 @@ paths:
       tags:
         - Search
 
+  /{uri}/twinsCount:
+    get:
+      summary: Count twins
+      description: Returns the number of other components that have the same sequence
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find twins for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        "200":
+          description: Count of twin components
+          content:
+            text/plain:
+              schema:
+                type: integer
+      tags:
+        - Search
+
   /{uri}/similar:
     get:
       summary: Search similar components
@@ -283,7 +307,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Similar components
           content:
             application/json:
@@ -306,6 +330,30 @@ paths:
       tags:
         - Search
 
+  /{uri}/similarCount:
+    get:
+      summary: Count similar components
+      description: Returns the number of components with similar sequences
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find similar components for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        "200":
+          description: Count of similar components
+          content:
+            text/plain:
+              schema:
+                type: integer
+      tags:
+        - Search
+
   /{uri}/uses:
     get:
       summary: Search uses
@@ -321,7 +369,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Components using the specified component
           content:
             application/json:
@@ -344,6 +392,30 @@ paths:
       tags:
         - Search
 
+  /{uri}/usesCount:
+    get:
+      summary: Count uses
+      description: Returns the number of components that use the specified component
+      parameters:
+        - name: uri
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The URI of the component to find uses for
+      security:
+        - userToken: []
+        - {}
+      responses:
+        "200":
+          description: Count of components using the specified component
+          content:
+            text/plain:
+              schema:
+                type: integer
+      tags:
+        - Search
+
   /{objectType}/count:
     get:
       summary: Count objects by type
@@ -360,7 +432,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Count of objects
           content:
             text/plain:
@@ -384,7 +456,7 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: SPARQL query results
           content:
             application/json:
@@ -392,5 +464,3 @@ paths:
                 type: object
       tags:
         - Search
-
-
