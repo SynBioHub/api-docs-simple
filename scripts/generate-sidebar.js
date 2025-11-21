@@ -3,9 +3,9 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 // Directory containing OpenAPI specs
-const OPENAPI_DIR = path.join(__dirname, '../src/openapi');
+const OPENAPI_DIR = path.join(__dirname, '../docs/openapi');
 // Output file for sidebar JSON data
-const OUTPUT_FILE = path.join(__dirname, '../src/sidebar-data.json');
+const OUTPUT_FILE = path.join(__dirname, '../docs/sidebar-data.json');
 
 // Read and parse all OpenAPI spec files
 async function readSpecs() {
