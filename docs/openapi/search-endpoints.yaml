@@ -67,6 +67,17 @@ paths:
                       type: string
                     version:
                       type: string
+              example:
+                - uri: "https://synbiohub.org/public/igem/BBa_K1404008/1"
+                  name: "BBa_K1404008"
+                  description: "p70-CsgA-His*2, double His-tagged curli generator"
+                  displayId: "BBa_K1404008"
+                  version: "1"
+                - uri: "https://synbiohub.org/public/igem/BBa_K1404009/1"
+                  name: "BBa_K1404009"
+                  description: "CsgA, curli monomer"
+                  displayId: "BBa_K1404009"
+                  version: "1"
       tags:
         - Search
 

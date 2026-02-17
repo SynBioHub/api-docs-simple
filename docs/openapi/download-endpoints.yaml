@@ -3,11 +3,11 @@ info:
   title: "SynBioHub Download API"
   version: "1.0.0"
   description: "API endpoints for downloading content from SynBioHub in various formats"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -49,15 +49,20 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: SBOL document
           content:
             application/rdf+xml:
               schema:
                 type: string
-        '403':
+              example: |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sbol="http://sbols.org/v2#">
+                  <!-- SBOL RDF content -->
+                </rdf:RDF>
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download
@@ -89,15 +94,20 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: SBOL document (non-recursive)
           content:
             application/rdf+xml:
               schema:
                 type: string
-        '403':
+              example: |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sbol="http://sbols.org/v2#">
+                  <!-- SBOL RDF content (non-recursive) -->
+                </rdf:RDF>
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download
@@ -129,15 +139,15 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: Metadata in JSON format
           content:
             application/json:
               schema:
                 type: object
-        '403':
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download
@@ -169,15 +179,15 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: GenBank file
           content:
             text/plain:
               schema:
                 type: string
-        '403':
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download
@@ -209,15 +219,15 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: FASTA file
           content:
             text/plain:
               schema:
                 type: string
-        '403':
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download
@@ -249,15 +259,15 @@ paths:
         - userToken: []
         - {}
       responses:
-        '200':
+        "200":
           description: GFF3 file
           content:
             text/plain:
               schema:
                 type: string
-        '403':
+        "403":
           description: Not authorized to access this object
-        '404':
+        "404":
           description: Object not found
       tags:
         - Download

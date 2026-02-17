@@ -3,11 +3,11 @@ info:
   title: "SynBioHub User API"
   version: "1.0.0"
   description: "API endpoints for user management in SynBioHub"
-  
+
 servers:
-  - url: 'https://synbiohub.org'
+  - url: "https://synbiohub.org"
     description: Main SynBioHub instance
-  - url: 'http://localhost:7777'
+  - url: "http://localhost:7777"
     description: Local development instance
 
 components:
@@ -42,7 +42,7 @@ paths:
                 - email
                 - password
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
@@ -52,7 +52,9 @@ paths:
                   token:
                     type: string
                     description: Authentication token to use for subsequent requests
-        '401':
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "401":
           description: Unauthorized - invalid credentials
       tags:
         - User
@@ -64,9 +66,9 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: Logout successful
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
       tags:
         - User
@@ -110,9 +112,9 @@ paths:
                 - password1
                 - password2
       responses:
-        '200':
+        "200":
           description: Registration successful
-        '400':
+        "400":
           description: Bad request - validation errors
       tags:
         - User
@@ -135,9 +137,9 @@ paths:
               required:
                 - email
       responses:
-        '200':
+        "200":
           description: Password reset email sent
-        '404':
+        "404":
           description: Account not found
       tags:
         - User
@@ -169,9 +171,9 @@ paths:
                 - password1
                 - password2
       responses:
-        '200':
+        "200":
           description: Password reset successful
-        '400':
+        "400":
           description: Bad request
       tags:
         - User
@@ -183,7 +185,7 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: User profile
           content:
             application/json:
@@ -222,7 +224,19 @@ paths:
                     type: array
                     items:
                       type: object
-        '401':
+              example:
+                id: 1
+                name: "John Doe"
+                username: "johndoe"
+                email: "john@example.com"
+                affiliation: "University of Example"
+                graphUri: "http://localhost:7777/user/johndoe"
+                isAdmin: false
+                isCurator: false
+                isMember: true
+                createdAt: "2023-01-15T10:30:00Z"
+                updatedAt: "2023-06-20T14:45:00Z"
+        "401":
           description: Unauthorized - invalid or missing token
       tags:
         - User
@@ -261,11 +275,11 @@ paths:
                 - name
                 - email
       responses:
-        '200':
+        "200":
           description: Profile updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '400':
+        "400":
           description: Bad request - validation errors
       tags:
         - User
@@ -277,7 +291,7 @@ paths:
       security:
         - userToken: []
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
@@ -298,9 +312,22 @@ paths:
                       type: string
                     isAdmin:
                       type: boolean
-        '401':
+              example:
+                - id: "1"
+                  username: "admin"
+                  name: "Administrator"
+                  email: "admin@example.com"
+                  affiliation: "SynBioHub"
+                  isAdmin: true
+                - id: "2"
+                  username: "johndoe"
+                  name: "John Doe"
+                  email: "john@example.com"
+                  affiliation: "University of Example"
+                  isAdmin: false
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
       tags:
         - User
@@ -329,13 +356,13 @@ paths:
                 - username
                 - role
       responses:
-        '200':
+        "200":
           description: User role updated successfully
-        '401':
+        "401":
           description: Unauthorized - invalid or missing token
-        '403':
+        "403":
           description: Forbidden - user is not an admin
-        '404':
+        "404":
           description: User not found
       tags:
         - User

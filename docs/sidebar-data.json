@@ -110,5 +110,12 @@
     "description": "API specification for SynBioHub visualization plugin endpoints",
     "version": "1.0.0",
     "order": 999
+  },
+  {
+    "id": "plugin-template",
+    "title": "SynBioHub Plugin Template",
+    "description": "Generic OpenAPI template for creating new SynBioHub plugins",
+    "version": "1.0.0",
+    "order": 1000
   }
 ]

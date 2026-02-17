@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: SynBioHub Submission Plugin API
+  description: API specification for SynBioHub submission plugin endpoints
+  version: 1.0.0
+paths:
+  /status:
+    get:
+      summary: Plugin Status
+      description: Checks if the plugin is operational.
+      responses:
+        "200":
+          description: Plugin is running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "The plugin is up and running"
+
+  /evaluate:
+    post:
+      summary: Evaluate Request
+      description: Determines if the plugin can handle the submission.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                type:
+                  type: string
+                url:
+                  type: string
+      responses:
+        "200":
+          description: Plugin can handle the submission
+        "415":
+          description: Plugin cannot handle the submission
+
+  /run:
+    post:
+      summary: Run Plugin
+      description: Executes the submission plugin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                complete_sbol:
+                  type: string
+                  description: URL to the complete SBOL to be submitted
+      responses:
+        "200":
+          description: Submission processed
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Result of the submission processing (e.g., modified SBOL)

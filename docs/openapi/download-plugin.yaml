@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  title: SynBioHub Download Plugin API
+  description: API specification for SynBioHub download plugin endpoints
+  version: 1.0.0
+paths:
+  /status:
+    get:
+      summary: Plugin Status
+      description: Checks if the plugin is operational.
+      responses:
+        "200":
+          description: Plugin is running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "The plugin is up and running"
+
+  /evaluate:
+    post:
+      summary: Evaluate Request
+      description: Determines if the plugin can handle the request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The type of object to be processed
+                url:
+                  type: string
+                  description: The URL of the object
+      responses:
+        "200":
+          description: Plugin can handle the request
+        "415":
+          description: Plugin cannot handle the request
+
+  /run:
+    post:
+      summary: Run Plugin
+      description: Executes the download plugin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the object to download
+                complete_sbol:
+                  type: string
+                  description: URL to the complete SBOL of the object
+      responses:
+        "200":
+          description: File download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary

@@ -227,7 +227,11 @@ document.addEventListener('DOMContentLoaded', function () {
             SwaggerUIBundle.SwaggerUIStandalonePreset
           ],
           layout: "BaseLayout",
-          supportedSubmitMethods: [], // Disable Try it out feature
+          supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'], // Enable Try it out
+          tryItOutEnabled: true,
+          defaultModelsExpandDepth: 1,
+          defaultModelExpandDepth: 1,
+          displayRequestDuration: true,
           requestSnippetsEnabled: true,
           requestSnippets: {
             generators: {
@@ -236,10 +240,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 syntax: 'bash',
                 fn: (req) => {
                   try {
+                    // console.log('Generating cURL snippet for:', req);
                     const har = requestToHar(req);
                     const snippet = new HTTPSnippet(har);
                     return snippet.convert('shell', 'curl');
                   } catch (e) {
+                    console.error('cURL generation failed:', e);
                     return 'curl command generation failed';
                   }
                 }
@@ -253,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const snippet = new HTTPSnippet(har);
                     return snippet.convert('python', 'requests');
                   } catch (e) {
+                    console.error('Python generation failed:', e);
                     return '# Python snippet generation failed';
                   }
                 }
@@ -266,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const snippet = new HTTPSnippet(har);
                     return snippet.convert('javascript', 'fetch');
                   } catch (e) {
+                    console.error('JavaScript generation failed:', e);
                     return '// JavaScript snippet generation failed';
                   }
                 }

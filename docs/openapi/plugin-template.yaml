@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  title: SynBioHub Plugin Template
+  description: >
+    A generic template for creating SynBioHub plugins. 
+    All plugins must implement the 'status', 'evaluate', and 'run' endpoints.
+    Customize the request and response schemas of 'evaluate' and 'run' based on the specific plugin type (Download, Visualization, Submission, etc.).
+  version: 1.0.0
+servers:
+  - url: "http://localhost:5000"
+    description: Local development server
+
+paths:
+  /status:
+    get:
+      summary: Plugin Status
+      description: >
+        Checks if the plugin is operational. 
+        SynBioHub polls this endpoint to verify the plugin is up.
+      responses:
+        "200":
+          description: Plugin is running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "The plugin is up and running"
+
+  /evaluate:
+    post:
+      summary: Evaluate Request
+      description: >
+        Determines if the plugin can handle the incoming request. 
+        SynBioHub sends metadata about the object or file to this endpoint.
+        Return 200 if the plugin can process it, or 415 if it cannot.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The RDF type of the object (e.g., ComponentDefinition, Collection)
+                url:
+                  type: string
+                  description: The URL of the object in SynBioHub
+                filename:
+                  type: string
+                  description: Name of the file (for submission plugins)
+      responses:
+        "200":
+          description: Plugin can handle the request
+        "415":
+          description: Plugin cannot handle the request
+
+  /run:
+    post:
+      summary: Run Plugin
+      description: >
+        Executes the plugin logic.
+        SynBioHub sends the actual data or location of the data to this endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the object
+                complete_sbol:
+                  type: string
+                  description: URL to fetch the complete SBOL data
+                params:
+                  type: object
+                  description: Any additional parameters passed from the frontend
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The uploaded file (for submission plugins)
+                params:
+                  type: object
+                  description: Any additional parameters
+      responses:
+        "200":
+          description: Plugin execution successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JSON response (e.g., for submission plugins)
+            text/html:
+              schema:
+                type: string
+                description: HTML content (for visualization plugins)
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: File download (for download plugins)
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error

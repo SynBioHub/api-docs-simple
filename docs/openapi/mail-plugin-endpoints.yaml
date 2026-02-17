@@ -1,0 +1,6 @@
+openapi: 3.0.0
+info:
+  title: SynBioHub Mail and Plugin Configuration API
+  description: API endpoints for managing mail settings and plugins in SynBioHub
+  version: 1.0.0
+paths: {}
