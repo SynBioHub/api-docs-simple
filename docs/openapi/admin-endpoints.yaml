@@ -20,7 +20,7 @@ components:
 
 paths:
   # General Admin Endpoints
-  /status:
+  /admin:
     get:
       summary: Get Status
       description: Returns the status of the SynBioHub instance
