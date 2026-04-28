@@ -1,0 +1,12 @@
+org/synbiohub/controller/EvaluateController.class
+org/synbiohub/model/EvaluatePostRequest.class
+org/synbiohub/api/EvaluateApi.class
+org/synbiohub/PluginApplication.class
+org/synbiohub/api/RunApi.class
+org/synbiohub/model/RunPostRequest.class
+org/synbiohub/api/StatusApi.class
+org/synbiohub/model/EvaluateRequest.class
+org/synbiohub/model/RunRequest.class
+org/synbiohub/api/ApiUtil.class
+org/synbiohub/controller/StatusController.class
+org/synbiohub/controller/RunController.class

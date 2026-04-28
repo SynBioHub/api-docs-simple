@@ -1,0 +1,12 @@
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/PluginApplication.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/api/ApiUtil.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/api/EvaluateApi.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/api/RunApi.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/api/StatusApi.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/controller/EvaluateController.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/controller/RunController.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/controller/StatusController.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/model/EvaluatePostRequest.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/model/EvaluateRequest.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/model/RunPostRequest.java
+/Users/peter/Documents/GitHub/api-docs-simple/plugin-demo/generated/src/main/java/org/synbiohub/model/RunRequest.java
